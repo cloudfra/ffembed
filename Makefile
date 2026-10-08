@@ -13,11 +13,11 @@
 # limitations under the License.
 
 REGISTRY = ghcr.io/cloudfra
-PROTOS =
+PROTOS = proto/ffbundle.pb.go proto/ffembed.pb.go  proto/ffexec.pb.go
 TEST_ASSETS =
 ASSETS = $(PROTOS)
-GO_PACKAGE = github.com/cloudfra/template-go
-ALL_APPS = exampleapp
+GO_PACKAGE = github.com/cloudfra/ffembed
+ALL_APPS = ffembed ffbundle ffexec
 PRODUCTION=1
 
 include Makefile_build.mk

@@ -12,19 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package exampleapp is the starter implementation new services should replace.
-package exampleapp
+// Command ffexec is the starter CLI entry point new services should replace.
+package main
 
-import "log/slog"
+import (
+	"flag"
+	"log/slog"
+	"os"
 
-// Args holds the inputs for Run.
-type Args struct {
-	// File that contains the input data.
-	File string
-}
+	"github.com/cloudfra/ffembed/internal/ffexec"
+)
 
-// Run executes the exampleapp application logic.
-func Run(args Args) error {
-	slog.Info("Running exampleapp with file", "file", args.File)
-	return nil
+var fileFlag = flag.String("file", "", "Input File")
+
+func main() {
+	flag.Parse()
+	if err := ffexec.Run(ffexec.Args{
+		File: *fileFlag,
+	}); err != nil {
+		slog.Error("ERROR", "error", err)
+		os.Exit(1)
+	}
 }

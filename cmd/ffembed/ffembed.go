@@ -1,4 +1,4 @@
-// Copyright 2026 Jeremy Edwards
+// Copyright 2026 Cloudfra
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-edition = "2024";
+// Command ffembed is the starter CLI entry point new services should replace.
+package main
 
-package cloudfra.exampleapp;
+import (
+	"flag"
+	"log/slog"
+	"os"
 
-option go_package = "github.com/cloudfra/exampleapp/proto";
+	"github.com/cloudfra/ffembed/internal/ffembed"
+)
+
+var fileFlag = flag.String("file", "", "Input File")
+
+func main() {
+	flag.Parse()
+	if err := ffembed.Run(ffembed.Args{
+		File: *fileFlag,
+	}); err != nil {
+		slog.Error("ERROR", "error", err)
+		os.Exit(1)
+	}
+}

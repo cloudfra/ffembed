@@ -17,7 +17,7 @@ Until then:
    contacted privately.
 2. A maintainer ([@jeremyje](https://github.com/jeremyje)) will follow up
    to arrange a private channel, and can manually open a draft
-   [security advisory](https://github.com/cloudfra/template-go/security/advisories)
+   [security advisory](https://github.com/cloudfra/ffembed/security/advisories)
    from there to continue the discussion and coordinate a fix
    confidentially - repo admins can create one directly regardless of
    whether the self-serve reporting feature is enabled.

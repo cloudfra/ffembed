@@ -12,13 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-module github.com/cloudfra/ffembed
+package ffembed
 
-go 1.25.0
-
-ignore (
-	./build
-	./third_party
+import (
+	"testing"
 )
 
-require google.golang.org/protobuf v1.36.12
+func TestRun(t *testing.T) {
+	if err := Run(Args{}); err != nil {
+		t.Errorf("Run() failed, %s", err)
+	}
+}
+
+func BenchmarkRun(b *testing.B) {
+	for b.Loop() {
+		if err := Run(Args{}); err != nil {
+			b.Errorf("Run() failed, %s", err)
+		}
+	}
+}
