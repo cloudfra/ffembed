@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-module github.com/cloudfra/ffembed
+// Package ffexec is the starter implementation new services should replace.
+package ffexec
 
-go 1.25.0
+import "log/slog"
 
-ignore (
-	./build
-	./third_party
-)
+// Args holds the inputs for Run.
+type Args struct {
+	// File that contains the input data.
+	File string
+}
 
-require google.golang.org/protobuf v1.36.12
+// Run executes the ffexec application logic.
+func Run(args Args) error {
+	slog.Info("Running ffexec with file", "file", args.File)
+	return nil
+}

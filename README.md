@@ -1,9 +1,9 @@
-# template-go
+# ffembed
 
 <!-- markdownlint-disable-next-line MD033 -->
 <img src="logo.png" alt="Logo" width="64" height="64" />
 
-[![CI](https://github.com/cloudfra/template-go/actions/workflows/deploy.yaml/badge.svg)](https://github.com/cloudfra/template-go/actions/workflows/deploy.yaml) [![Go Reference](https://pkg.go.dev/badge/github.com/cloudfra/template-go.svg)](https://pkg.go.dev/github.com/cloudfra/template-go) [![codecov](https://codecov.io/gh/cloudfra/template-go/graph/badge.svg?token=UVApxhg6z7)](https://codecov.io/gh/cloudfra/template-go) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cloudfra/template-go/badge)](https://scorecard.dev/viewer/?uri=github.com/cloudfra/template-go)
+[![CI](https://github.com/cloudfra/ffembed/actions/workflows/deploy.yaml/badge.svg)](https://github.com/cloudfra/ffembed/actions/workflows/deploy.yaml) [![Go Reference](https://pkg.go.dev/badge/github.com/cloudfra/ffembed.svg)](https://pkg.go.dev/github.com/cloudfra/ffembed) [![codecov](https://codecov.io/gh/cloudfra/ffembed/graph/badge.svg?token=UVApxhg6z7)](https://codecov.io/gh/cloudfra/ffembed) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cloudfra/ffembed/badge)](https://scorecard.dev/viewer/?uri=github.com/cloudfra/ffembed)
 
 A starter template for Go projects at Cloudfra, wiring together a
 `make`-based build system, cross-platform binaries, Docker images,
@@ -38,10 +38,10 @@ boilerplate and start with working infrastructure on day one.
 
 ```bash
 # Clone the repository
-git clone git@github.com:cloudfra/template-go.git
+git clone git@github.com:cloudfra/ffembed.git
 # Build binaries for every supported platform
 make -j$(nproc)
-# Build and run the exampleapp binary for your current platform
+# Build and run the ffembed binary for your current platform
 make run
 ```
 
@@ -63,7 +63,7 @@ package; the build system picks it up automatically.
 | Target                             | Description                                                                                                    |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `make` / `make all`                | Build binaries for every supported platform                                                                    |
-| `make run`                         | Build and run the exampleapp binary                                                                               |
+| `make run`                         | Build and run the ffembed binary                                                                               |
 | `make test`                        | Run the unit test suite                                                                                        |
 | `make bench`                       | Run benchmarks                                                                                                 |
 | `make test-deflake`                | Re-run tests to catch flakes                                                                                   |

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Command exampleapp is the starter CLI entry point new services should replace.
+// Command ffbundle is the starter CLI entry point new services should replace.
 package main
 
 import (
@@ -20,14 +20,14 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/cloudfra/template-go/internal/exampleapp"
+	"github.com/cloudfra/ffembed/internal/ffbundle"
 )
 
 var fileFlag = flag.String("file", "", "Input File")
 
 func main() {
 	flag.Parse()
-	if err := exampleapp.Run(exampleapp.Args{
+	if err := ffbundle.Run(ffbundle.Args{
 		File: *fileFlag,
 	}); err != nil {
 		slog.Error("ERROR", "error", err)
