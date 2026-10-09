@@ -19,5 +19,5 @@ ASSETS = $(PROTOS)
 GO_PACKAGE = github.com/cloudfra/ffembed
 ALL_APPS = ffembed ffbundle ffexec
 PRODUCTION=1
-
+PLAN9_PLATFORMS = 
 include Makefile_build.mk

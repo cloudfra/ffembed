@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Command ffbundle is the starter CLI entry point new services should replace.
+// Command ffbundle downloads an ffmpeg package and bundles it to be used with ffembed.
 package main
 
 import (
@@ -20,15 +20,27 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/cloudfra/ffembed/internal/common"
 	"github.com/cloudfra/ffembed/internal/ffbundle"
 )
 
-var fileFlag = flag.String("file", "", "Input File")
+var (
+	architectureFlag = flag.String("arch", "", "Architecture of the ffmpeg package to download (e.g. amd64, arm64)")
+	osFlag           = flag.String("os", "", "Operating system of the ffmpeg package to download (e.g. linux, windows, darwin)")
+	inputFlag        = flag.String("input", "", "Input of the ffmpeg package to download (e.g. https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz) for multiple files, delimit by commas.")
+	outputFlag       = flag.String("output", "", "Path of the output file, must end in .tar.xz (e.g. ffmpeg-static.tar.xz)")
+	hashFlag         = flag.String("hash", "", "Expected hash of the remote file to verify integrity (e.g. sha256:abc123...)")
+)
 
 func main() {
 	flag.Parse()
+
 	if err := ffbundle.Run(ffbundle.Args{
-		File: *fileFlag,
+		Architecture:    *architectureFlag,
+		OperatingSystem: *osFlag,
+		Input:           common.CSVToList(*inputFlag),
+		Output:          *outputFlag,
+		Hash:            *hashFlag,
 	}); err != nil {
 		slog.Error("ERROR", "error", err)
 		os.Exit(1)
