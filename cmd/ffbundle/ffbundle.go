@@ -20,8 +20,8 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/cloudfra/ffembed/internal/app/ffbundle"
 	"github.com/cloudfra/ffembed/internal/common"
-	"github.com/cloudfra/ffembed/internal/ffbundle"
 )
 
 var (

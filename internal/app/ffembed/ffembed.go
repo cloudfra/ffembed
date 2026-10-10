@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Command ffembed is the starter CLI entry point new services should replace.
-package main
+// Package ffembed is the starter implementation new services should replace.
+package ffembed
 
-import (
-	"flag"
-	"log/slog"
-	"os"
+import "log/slog"
 
-	"github.com/cloudfra/ffembed/internal/app/ffembed"
-)
+// Args holds the inputs for Run.
+type Args struct {
+	// File that contains the input data.
+	File string
+}
 
-var fileFlag = flag.String("file", "", "Input File")
-
-func main() {
-	flag.Parse()
-	if err := ffembed.Run(ffembed.Args{
-		File: *fileFlag,
-	}); err != nil {
-		slog.Error("ERROR", "error", err)
-		os.Exit(1)
-	}
+// Run executes the ffembed application logic.
+func Run(args Args) error {
+	slog.Info("Running ffembed with file", "file", args.File)
+	return nil
 }

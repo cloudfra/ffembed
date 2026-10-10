@@ -20,15 +20,17 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/cloudfra/ffembed/internal/ffexec"
+	"github.com/cloudfra/ffembed/internal/app/ffexec"
 )
-
-var fileFlag = flag.String("file", "", "Input File")
 
 func main() {
 	flag.Parse()
+	if len(os.Args) < 2 {
+		// TODO: Add help text that explains the arguments required for this application.
+	}
 	if err := ffexec.Run(ffexec.Args{
-		File: *fileFlag,
+		Command: os.Args[1],
+		Args:    os.Args[2:],
 	}); err != nil {
 		slog.Error("ERROR", "error", err)
 		os.Exit(1)

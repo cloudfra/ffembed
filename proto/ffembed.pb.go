@@ -34,13 +34,436 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Args struct {
+	state                        protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_PreferInstalled   bool                   `protobuf:"varint,1,opt,name=prefer_installed,json=preferInstalled"`
+	xxx_hidden_RemoteUrl         *string                `protobuf:"bytes,2,opt,name=remote_url,json=remoteUrl"`
+	xxx_hidden_RemoteUrlChecksum *string                `protobuf:"bytes,3,opt,name=remote_url_checksum,json=remoteUrlChecksum"`
+	xxx_hidden_AcceptLicense     []string               `protobuf:"bytes,4,rep,name=accept_license,json=acceptLicense"`
+	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
+	XXX_presence                 [1]uint32
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *Args) Reset() {
+	*x = Args{}
+	mi := &file_proto_ffembed_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Args) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Args) ProtoMessage() {}
+
+func (x *Args) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Args) GetPreferInstalled() bool {
+	if x != nil {
+		return x.xxx_hidden_PreferInstalled
+	}
+	return false
+}
+
+func (x *Args) GetRemoteUrl() string {
+	if x != nil {
+		if x.xxx_hidden_RemoteUrl != nil {
+			return *x.xxx_hidden_RemoteUrl
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *Args) GetRemoteUrlChecksum() string {
+	if x != nil {
+		if x.xxx_hidden_RemoteUrlChecksum != nil {
+			return *x.xxx_hidden_RemoteUrlChecksum
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *Args) GetAcceptLicense() []string {
+	if x != nil {
+		return x.xxx_hidden_AcceptLicense
+	}
+	return nil
+}
+
+func (x *Args) SetPreferInstalled(v bool) {
+	x.xxx_hidden_PreferInstalled = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *Args) SetRemoteUrl(v string) {
+	x.xxx_hidden_RemoteUrl = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+}
+
+func (x *Args) SetRemoteUrlChecksum(v string) {
+	x.xxx_hidden_RemoteUrlChecksum = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *Args) SetAcceptLicense(v []string) {
+	x.xxx_hidden_AcceptLicense = v
+}
+
+func (x *Args) HasPreferInstalled() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *Args) HasRemoteUrl() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *Args) HasRemoteUrlChecksum() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *Args) ClearPreferInstalled() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_PreferInstalled = false
+}
+
+func (x *Args) ClearRemoteUrl() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_RemoteUrl = nil
+}
+
+func (x *Args) ClearRemoteUrlChecksum() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_RemoteUrlChecksum = nil
+}
+
+type Args_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	PreferInstalled   *bool
+	RemoteUrl         *string
+	RemoteUrlChecksum *string
+	AcceptLicense     []string
+}
+
+func (b0 Args_builder) Build() *Args {
+	m0 := &Args{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.PreferInstalled != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_PreferInstalled = *b.PreferInstalled
+	}
+	if b.RemoteUrl != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_RemoteUrl = b.RemoteUrl
+	}
+	if b.RemoteUrlChecksum != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_RemoteUrlChecksum = b.RemoteUrlChecksum
+	}
+	x.xxx_hidden_AcceptLicense = b.AcceptLicense
+	return m0
+}
+
+type FfmpegRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Args []string               `protobuf:"bytes,1,rep,name=args"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *FfmpegRequest) Reset() {
+	*x = FfmpegRequest{}
+	mi := &file_proto_ffembed_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfmpegRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfmpegRequest) ProtoMessage() {}
+
+func (x *FfmpegRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FfmpegRequest) GetArgs() []string {
+	if x != nil {
+		return x.xxx_hidden_Args
+	}
+	return nil
+}
+
+func (x *FfmpegRequest) SetArgs(v []string) {
+	x.xxx_hidden_Args = v
+}
+
+type FfmpegRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Args is the raw arguments.
+	// If the args are specified then the other parameters cannot be set.
+	Args []string
+}
+
+func (b0 FfmpegRequest_builder) Build() *FfmpegRequest {
+	m0 := &FfmpegRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Args = b.Args
+	return m0
+}
+
+type FfmpegEvent struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FfmpegEvent) Reset() {
+	*x = FfmpegEvent{}
+	mi := &file_proto_ffembed_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfmpegEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfmpegEvent) ProtoMessage() {}
+
+func (x *FfmpegEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type FfmpegEvent_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 FfmpegEvent_builder) Build() *FfmpegEvent {
+	m0 := &FfmpegEvent{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type FfmpegResponse struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FfmpegResponse) Reset() {
+	*x = FfmpegResponse{}
+	mi := &file_proto_ffembed_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfmpegResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfmpegResponse) ProtoMessage() {}
+
+func (x *FfmpegResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type FfmpegResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 FfmpegResponse_builder) Build() *FfmpegResponse {
+	m0 := &FfmpegResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type FfprobeRequest struct {
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Args []string               `protobuf:"bytes,1,rep,name=args"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *FfprobeRequest) Reset() {
+	*x = FfprobeRequest{}
+	mi := &file_proto_ffembed_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfprobeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfprobeRequest) ProtoMessage() {}
+
+func (x *FfprobeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FfprobeRequest) GetArgs() []string {
+	if x != nil {
+		return x.xxx_hidden_Args
+	}
+	return nil
+}
+
+func (x *FfprobeRequest) SetArgs(v []string) {
+	x.xxx_hidden_Args = v
+}
+
+type FfprobeRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Args is the raw arguments.
+	// If the args are specified then the other parameters cannot be set.
+	Args []string
+}
+
+func (b0 FfprobeRequest_builder) Build() *FfprobeRequest {
+	m0 := &FfprobeRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Args = b.Args
+	return m0
+}
+
+type FfprobeResponse struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FfprobeResponse) Reset() {
+	*x = FfprobeResponse{}
+	mi := &file_proto_ffembed_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfprobeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfprobeResponse) ProtoMessage() {}
+
+func (x *FfprobeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type FfprobeResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 FfprobeResponse_builder) Build() *FfprobeResponse {
+	m0 := &FfprobeResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
 var File_proto_ffembed_proto protoreflect.FileDescriptor
 
 const file_proto_ffembed_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/ffembed.proto\x12\x10cloudfra.ffembedB#Z!github.com/cloudfra/ffembed/protob\beditionsp\xe9\a"
+	"\x13proto/ffembed.proto\x12\x10cloudfra.ffembed\"\xa7\x01\n" +
+	"\x04Args\x12)\n" +
+	"\x10prefer_installed\x18\x01 \x01(\bR\x0fpreferInstalled\x12\x1d\n" +
+	"\n" +
+	"remote_url\x18\x02 \x01(\tR\tremoteUrl\x12.\n" +
+	"\x13remote_url_checksum\x18\x03 \x01(\tR\x11remoteUrlChecksum\x12%\n" +
+	"\x0eaccept_license\x18\x04 \x03(\tR\racceptLicense\"#\n" +
+	"\rFfmpegRequest\x12\x12\n" +
+	"\x04args\x18\x01 \x03(\tR\x04args\"\r\n" +
+	"\vFfmpegEvent\"\x10\n" +
+	"\x0eFfmpegResponse\"$\n" +
+	"\x0eFfprobeRequest\x12\x12\n" +
+	"\x04args\x18\x01 \x03(\tR\x04args\"\x11\n" +
+	"\x0fFfprobeResponseB#Z!github.com/cloudfra/ffembed/protob\beditionsp\xe9\a"
 
-var file_proto_ffembed_proto_goTypes = []any{}
+var file_proto_ffembed_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_proto_ffembed_proto_goTypes = []any{
+	(*Args)(nil),            // 0: cloudfra.ffembed.Args
+	(*FfmpegRequest)(nil),   // 1: cloudfra.ffembed.FfmpegRequest
+	(*FfmpegEvent)(nil),     // 2: cloudfra.ffembed.FfmpegEvent
+	(*FfmpegResponse)(nil),  // 3: cloudfra.ffembed.FfmpegResponse
+	(*FfprobeRequest)(nil),  // 4: cloudfra.ffembed.FfprobeRequest
+	(*FfprobeResponse)(nil), // 5: cloudfra.ffembed.FfprobeResponse
+}
 var file_proto_ffembed_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
@@ -60,12 +483,13 @@ func file_proto_ffembed_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_ffembed_proto_rawDesc), len(file_proto_ffembed_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_proto_ffembed_proto_goTypes,
 		DependencyIndexes: file_proto_ffembed_proto_depIdxs,
+		MessageInfos:      file_proto_ffembed_proto_msgTypes,
 	}.Build()
 	File_proto_ffembed_proto = out.File
 	file_proto_ffembed_proto_goTypes = nil

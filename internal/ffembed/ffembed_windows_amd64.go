@@ -12,19 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package ffexec is the starter implementation new services should replace.
-package ffexec
+//go:build windows && amd64
 
-import "log/slog"
+package ffembed
 
-// Args holds the inputs for Run.
-type Args struct {
-	// File that contains the input data.
-	File string
-}
+import (
+	_ "embed"
+)
 
-// Run executes the ffexec application logic.
-func Run(args Args) error {
-	slog.Info("Running ffexec with file", "file", args.File)
-	return nil
-}
+//go:embed bin/windows_amd64/ffmpeg.tar.xz
+var ffmpegEmbedded []byte
