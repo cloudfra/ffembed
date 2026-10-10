@@ -18,22 +18,17 @@ package common
 import "strings"
 
 // CSVToList splits a comma separated string into its unique values. Whitespace
-// around each value is trimmed and empty values are dropped. The order of the
-// returned values is not guaranteed.
+// around each value is trimmed and empty values are dropped. The values are
+// returned in the order they first appear.
 func CSVToList(val string) []string {
-	vals := strings.Split(val, ",")
-	m := map[string]any{}
-	for _, v := range vals {
+	seen := map[string]bool{}
+	result := []string{}
+	for v := range strings.SplitSeq(val, ",") {
 		k := strings.TrimSpace(v)
-		if k != "" {
-			m[k] = nil
+		if k != "" && !seen[k] {
+			seen[k] = true
+			result = append(result, k)
 		}
-	}
-	result := make([]string, len(m))
-	i := 0
-	for k := range m {
-		result[i] = k
-		i++
 	}
 	return result
 }

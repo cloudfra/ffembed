@@ -17,8 +17,14 @@
 package ffembed
 
 import (
-	_ "embed"
+	"embed"
 )
 
-//go:embed bin/linux_amd64/ffmpeg.tar.xz
-var ffmpegEmbedded []byte
+// embedded holds the bundle when one was placed in the directory before the
+// build. The directory is embedded rather than the bundle so that the build
+// works without one.
+//
+//go:embed all:bin/linux_amd64
+var embedded embed.FS
+
+const embeddedPath = "bin/linux_amd64/" + bundleName

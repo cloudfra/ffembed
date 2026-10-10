@@ -18,36 +18,208 @@ package cloudfra.ffembed;
 
 option go_package = "github.com/cloudfra/ffembed/proto";
 
+// Args configures how ffembed.New locates or installs ffmpeg and ffprobe.
 message Args {
+  // Prefer an ffmpeg and ffprobe found on the PATH over the embedded copy or a
+  // download.
   bool prefer_installed = 1;
+  // URL of an ffmpeg archive to download instead of the one listed in the
+  // built-in manifest. Setting it permits the download. (optional)
   string remote_url = 2;
+  // Checksum used to validate the contents of remote_url, in the form
+  // "sha256:<hex>". (optional)
   string remote_url_checksum = 3;
+  // Licenses that are acceptable for a build of ffmpeg downloaded from the
+  // built-in manifest (e.g. "LGPL-3.0"), in order of preference.
   repeated string accept_license = 4;
+  // Directory ffmpeg and ffprobe are installed into and reused from. Defaults
+  // to a directory for ffembed in the user's cache directory.
+  string work_dir = 5;
+  // Permit downloading the build listed in the built-in manifest when ffmpeg
+  // is not available any other way.
+  bool allow_download = 6;
 }
 
 message FfmpegRequest {
-  // Args is the raw arguments. 
+  // Args is the raw arguments.
   // If the args are specified then the other parameters cannot be set.
   repeated string args = 1;
 
-  // TODO: Add structured arguments to send to FFMpeg.
+  // Input media files, each emitted as -i.
+  repeated string inputs = 2;
+  // Output media file.
+  string output = 3;
+  // Video codec (e.g. "libx264"), emitted as -c:v.
+  string video_codec = 4;
+  // Audio codec (e.g. "aac"), emitted as -c:a.
+  string audio_codec = 5;
+  // Constant rate factor, emitted as -crf.
+  int32 crf = 6;
+  // Encoder preset (e.g. "veryfast"), emitted as -preset.
+  string preset = 7;
+  // Video bitrate (e.g. "2M"), emitted as -b:v.
+  string video_bitrate = 8;
+  // Audio bitrate (e.g. "128k"), emitted as -b:a.
+  string audio_bitrate = 9;
+  // Container format (e.g. "mp4"), emitted as -f.
+  string format = 10;
+  // Replace the output when it exists, emitted as -y. Otherwise -n is emitted
+  // and ffmpeg fails rather than prompting.
+  bool overwrite = 11;
+  // Move the index of an MP4 or MOV output to its start so it can be played
+  // while it downloads, emitted as -movflags +faststart.
+  bool faststart = 12;
 }
 
+enum FfmpegState {
+  FFMPEG_STATE_UNSPECIFIED = 0;
+  // ffmpeg is running, progress holds its latest report when there is one.
+  FFMPEG_STATE_RUNNING = 1;
+  // ffmpeg exited successfully.
+  FFMPEG_STATE_COMPLETED = 2;
+  // ffmpeg exited with an error.
+  FFMPEG_STATE_FAILED = 3;
+  // ffmpeg was stopped by a call to Cancel.
+  FFMPEG_STATE_CANCELED = 4;
+}
+
+// FfmpegProgress is one progress report of ffmpeg.
+message FfmpegProgress {
+  // Frames processed so far.
+  int64 frame = 1;
+  // Frames processed per second.
+  double fps = 2;
+  // Bitrate of the output in kbit/s.
+  double bitrate_kbps = 3;
+  // Size of the output so far in bytes.
+  int64 total_size = 4;
+  // Position in the output in microseconds.
+  int64 out_time_us = 5;
+  // Frames duplicated so far.
+  int64 dup_frames = 6;
+  // Frames dropped so far.
+  int64 drop_frames = 7;
+  // Processing speed relative to realtime, 2 is twice as fast.
+  double speed = 8;
+  // How much of the first input is processed, from 0 to 100. Only set when
+  // the duration of the input is known, which it is not for live sources.
+  double percent = 9;
+}
+
+// FfmpegEvent reports a change of a running ffmpeg.
 message FfmpegEvent {
+  FfmpegState state = 1;
+  // Progress report, set when ffmpeg reported progress.
+  FfmpegProgress progress = 2;
+  // Line ffmpeg wrote to its log (stderr), set for log events.
+  string log = 3;
+  // Line ffmpeg wrote to stdout that is not a progress report, set for
+  // output events (e.g. the result of -version).
+  string output = 4;
+  // Result of the run, set on the last event.
+  FfmpegResponse response = 5;
 }
 
-
+// FfmpegResponse is the result of a finished ffmpeg.
 message FfmpegResponse {
+  // State ffmpeg finished in: completed, failed, or canceled.
+  FfmpegState state = 1;
+  // Exit code of ffmpeg, -1 when it was killed.
+  int32 exit_code = 2;
+  // Output file of the request, when it named one.
+  string output = 3;
+  // Last lines ffmpeg wrote to its log (stderr) when it did not complete.
+  string log = 4;
+  // Number of progress reports ffmpeg made.
+  int64 progress_reports = 5;
+  // Last frame count ffmpeg reported.
+  int64 last_frame = 6;
+  // Highest frames per second ffmpeg reported.
+  double max_fps = 7;
 }
 
 message FfprobeRequest {
-  // Args is the raw arguments. 
+  // Args is the raw arguments.
   // If the args are specified then the other parameters cannot be set.
   repeated string args = 1;
 
-  // TODO: Add structured arguments to send to FFMpeg.
+  // Input media file to probe.
+  string input = 2;
+  // Include container metadata. When none of the show fields are set the
+  // format and the streams are included.
+  bool show_format = 3;
+  // Include metadata of every stream.
+  bool show_streams = 4;
+  // Include chapter metadata.
+  bool show_chapters = 5;
+  // Only report the matching streams (e.g. "v:0"), emitted as -select_streams.
+  string select_streams = 6;
+}
+
+message FfprobeFormat {
+  string filename = 1;
+  // Container format names (e.g. "mov,mp4,m4a,3gp,3g2,mj2").
+  string format_name = 2;
+  string format_long_name = 3;
+  // Start time in seconds.
+  double start_time = 4;
+  // Duration in seconds.
+  double duration = 5;
+  // Size in bytes.
+  int64 size = 6;
+  // Bits per second.
+  int64 bit_rate = 7;
+  int32 nb_streams = 8;
+  map<string, string> tags = 9;
+}
+
+message FfprobeStream {
+  int32 index = 1;
+  // Codec name (e.g. "h264", "aac").
+  string codec_name = 2;
+  string codec_long_name = 3;
+  // Stream type: "video", "audio", "subtitle", "data", or "attachment".
+  string codec_type = 4;
+  string profile = 5;
+  // Video width and height in pixels.
+  int32 width = 6;
+  int32 height = 7;
+  // Video pixel format (e.g. "yuv420p").
+  string pix_fmt = 8;
+  // Frame rates as the fraction ffprobe reports (e.g. "30000/1001").
+  string r_frame_rate = 9;
+  string avg_frame_rate = 10;
+  // Audio sample rate in Hz.
+  int32 sample_rate = 11;
+  // Audio channel count and layout (e.g. "stereo").
+  int32 channels = 12;
+  string channel_layout = 13;
+  // Duration in seconds.
+  double duration = 14;
+  // Bits per second.
+  int64 bit_rate = 15;
+  int64 nb_frames = 16;
+  map<string, string> tags = 17;
+  // Four character code of the codec (e.g. "avc1").
+  string codec_tag_string = 18;
+  // Codec level (e.g. 40 for H.264 level 4.0).
+  int32 level = 19;
+  // Audio bits per sample, 0 for codecs without a fixed sample size.
+  int32 bits_per_sample = 20;
+}
+
+message FfprobeChapter {
+  int64 id = 1;
+  // Start and end time in seconds.
+  double start_time = 2;
+  double end_time = 3;
+  map<string, string> tags = 4;
 }
 
 message FfprobeResponse {
-
+  // Everything ffprobe wrote to stdout. JSON for structured requests.
+  string output = 1;
+  FfprobeFormat format = 2;
+  repeated FfprobeStream streams = 3;
+  repeated FfprobeChapter chapters = 4;
 }

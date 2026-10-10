@@ -1,12 +1,23 @@
 {
   "windows_amd64": {
-    "files": [
-      {
-        "file": "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
-        "checksum": "sha256:dafe64a1c4ece573b8e5f076bf8914ea997be9533be4bb52e6c5a33adfdd8d1b"
-      }
-    ],
-    "license": "GPL-2.0"
+    "gpl": {
+      "files": [
+        {
+          "file": "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
+          "checksum": "sha256:dafe64a1c4ece573b8e5f076bf8914ea997be9533be4bb52e6c5a33adfdd8d1b"
+        }
+      ],
+      "license": "GPL-3.0"
+    },
+    "lgpl": {
+      "files": [
+        {
+          "file": "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-lgpl.zip",
+          "checksum": "sha256:70f38a70542c2864bbb530bb944c9f9b21a42e9fe21ffae38ddc5df3b89315cb"
+        }
+      ],
+      "license": "LGPL-3.0"
+    }
   },
   "linux_amd64": {
     "gpl": {
@@ -16,7 +27,7 @@
           "checksum": "sha256:8be42254704c7dcaffb68db720ff5b92d3e62f09f92d19543fd2db8ee383ac39"
         }
       ],
-      "license": "GPL-2.0"
+      "license": "GPL-3.0"
     },
     "lgpl": {
       "files": [
@@ -25,7 +36,7 @@
           "checksum": "sha256:44b28a9d46c57197846a102635c087d060d07d1c421ebe0f78aa5fc53fcb84ea"
         }
       ],
-      "license": "LGPL-2.0"
+      "license": "LGPL-3.0"
     }
   },
   "darwin_arm64": {
