@@ -91,3 +91,6 @@ output/
 web.cert
 web.key
 gha-creds-*.json
+
+*.xz
+*.zip
