@@ -17,3 +17,37 @@ edition = "2024";
 package cloudfra.ffembed;
 
 option go_package = "github.com/cloudfra/ffembed/proto";
+
+message Args {
+  bool prefer_installed = 1;
+  string remote_url = 2;
+  string remote_url_checksum = 3;
+  repeated string accept_license = 4;
+}
+
+message FfmpegRequest {
+  // Args is the raw arguments. 
+  // If the args are specified then the other parameters cannot be set.
+  repeated string args = 1;
+
+  // TODO: Add structured arguments to send to FFMpeg.
+}
+
+message FfmpegEvent {
+}
+
+
+message FfmpegResponse {
+}
+
+message FfprobeRequest {
+  // Args is the raw arguments. 
+  // If the args are specified then the other parameters cannot be set.
+  repeated string args = 1;
+
+  // TODO: Add structured arguments to send to FFMpeg.
+}
+
+message FfprobeResponse {
+
+}

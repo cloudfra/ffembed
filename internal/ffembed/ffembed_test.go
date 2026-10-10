@@ -13,21 +13,3 @@
 // limitations under the License.
 
 package ffembed
-
-import (
-	"testing"
-)
-
-func TestRun(t *testing.T) {
-	if err := Run(Args{}); err != nil {
-		t.Errorf("Run() failed, %s", err)
-	}
-}
-
-func BenchmarkRun(b *testing.B) {
-	for b.Loop() {
-		if err := Run(Args{}); err != nil {
-			b.Errorf("Run() failed, %s", err)
-		}
-	}
-}

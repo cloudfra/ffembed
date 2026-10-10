@@ -12,25 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Command ffembed is the starter CLI entry point new services should replace.
-package main
+//go:build !((linux && amd64) || (windows && amd64))
 
-import (
-	"flag"
-	"log/slog"
-	"os"
+package ffembed
 
-	"github.com/cloudfra/ffembed/internal/app/ffembed"
-)
-
-var fileFlag = flag.String("file", "", "Input File")
-
-func main() {
-	flag.Parse()
-	if err := ffembed.Run(ffembed.Args{
-		File: *fileFlag,
-	}); err != nil {
-		slog.Error("ERROR", "error", err)
-		os.Exit(1)
-	}
-}
+var ffmpegEmbedded []byte

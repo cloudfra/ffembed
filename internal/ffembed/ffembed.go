@@ -12,19 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package ffembed is the starter implementation new services should replace.
+// Package ffembed
 package ffembed
 
-import "log/slog"
+import (
+	_ "embed"
+	"encoding/json"
+	"errors"
+)
 
-// Args holds the inputs for Run.
-type Args struct {
-	// File that contains the input data.
-	File string
+//go:embed manifest.json
+var manifestJSON []byte
+
+func Ffmpeg() ([]byte, error) {
+	if len(ffmpegEmbedded) > 0 {
+		return ffmpegEmbedded, nil
+	}
+	return nil, errors.New("embedded ffmpeg is not available")
 }
 
-// Run executes the ffembed application logic.
-func Run(args Args) error {
-	slog.Info("Running ffembed with file", "file", args.File)
-	return nil
+// Manifest that's retrieved from ffmpeg static build hosting.
+type Manifest struct {
+	// TODO: Populate the fields based on manifest.json.
+	// TODO: Fill out the manifest details based on static builds for ffmpeg.
+}
+
+func GetManifest() (*Manifest, error) {
+	manifest := &Manifest{}
+	if err := json.Unmarshal(manifestJSON, manifest); err != nil {
+		return nil, err
+	}
+	return manifest, nil
 }
