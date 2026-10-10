@@ -34,12 +34,69 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type FfmpegState int32
+
+const (
+	FfmpegState_FFMPEG_STATE_UNSPECIFIED FfmpegState = 0
+	// ffmpeg is running, progress holds its latest report when there is one.
+	FfmpegState_FFMPEG_STATE_RUNNING FfmpegState = 1
+	// ffmpeg exited successfully.
+	FfmpegState_FFMPEG_STATE_COMPLETED FfmpegState = 2
+	// ffmpeg exited with an error.
+	FfmpegState_FFMPEG_STATE_FAILED FfmpegState = 3
+	// ffmpeg was stopped by a call to Cancel.
+	FfmpegState_FFMPEG_STATE_CANCELLED FfmpegState = 4
+)
+
+// Enum value maps for FfmpegState.
+var (
+	FfmpegState_name = map[int32]string{
+		0: "FFMPEG_STATE_UNSPECIFIED",
+		1: "FFMPEG_STATE_RUNNING",
+		2: "FFMPEG_STATE_COMPLETED",
+		3: "FFMPEG_STATE_FAILED",
+		4: "FFMPEG_STATE_CANCELLED",
+	}
+	FfmpegState_value = map[string]int32{
+		"FFMPEG_STATE_UNSPECIFIED": 0,
+		"FFMPEG_STATE_RUNNING":     1,
+		"FFMPEG_STATE_COMPLETED":   2,
+		"FFMPEG_STATE_FAILED":      3,
+		"FFMPEG_STATE_CANCELLED":   4,
+	}
+)
+
+func (x FfmpegState) Enum() *FfmpegState {
+	p := new(FfmpegState)
+	*p = x
+	return p
+}
+
+func (x FfmpegState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FfmpegState) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_ffembed_proto_enumTypes[0].Descriptor()
+}
+
+func (FfmpegState) Type() protoreflect.EnumType {
+	return &file_proto_ffembed_proto_enumTypes[0]
+}
+
+func (x FfmpegState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Args configures how ffembed.New locates or installs ffmpeg and ffprobe.
 type Args struct {
 	state                        protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_PreferInstalled   bool                   `protobuf:"varint,1,opt,name=prefer_installed,json=preferInstalled"`
 	xxx_hidden_RemoteUrl         *string                `protobuf:"bytes,2,opt,name=remote_url,json=remoteUrl"`
 	xxx_hidden_RemoteUrlChecksum *string                `protobuf:"bytes,3,opt,name=remote_url_checksum,json=remoteUrlChecksum"`
 	xxx_hidden_AcceptLicense     []string               `protobuf:"bytes,4,rep,name=accept_license,json=acceptLicense"`
+	xxx_hidden_WorkDir           *string                `protobuf:"bytes,5,opt,name=work_dir,json=workDir"`
+	xxx_hidden_AllowDownload     bool                   `protobuf:"varint,6,opt,name=allow_download,json=allowDownload"`
 	XXX_raceDetectHookData       protoimpl.RaceDetectHookData
 	XXX_presence                 [1]uint32
 	unknownFields                protoimpl.UnknownFields
@@ -105,23 +162,50 @@ func (x *Args) GetAcceptLicense() []string {
 	return nil
 }
 
+func (x *Args) GetWorkDir() string {
+	if x != nil {
+		if x.xxx_hidden_WorkDir != nil {
+			return *x.xxx_hidden_WorkDir
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *Args) GetAllowDownload() bool {
+	if x != nil {
+		return x.xxx_hidden_AllowDownload
+	}
+	return false
+}
+
 func (x *Args) SetPreferInstalled(v bool) {
 	x.xxx_hidden_PreferInstalled = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *Args) SetRemoteUrl(v string) {
 	x.xxx_hidden_RemoteUrl = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *Args) SetRemoteUrlChecksum(v string) {
 	x.xxx_hidden_RemoteUrlChecksum = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *Args) SetAcceptLicense(v []string) {
 	x.xxx_hidden_AcceptLicense = v
+}
+
+func (x *Args) SetWorkDir(v string) {
+	x.xxx_hidden_WorkDir = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+}
+
+func (x *Args) SetAllowDownload(v bool) {
+	x.xxx_hidden_AllowDownload = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *Args) HasPreferInstalled() bool {
@@ -145,6 +229,20 @@ func (x *Args) HasRemoteUrlChecksum() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
+func (x *Args) HasWorkDir() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *Args) HasAllowDownload() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
 func (x *Args) ClearPreferInstalled() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_PreferInstalled = false
@@ -160,13 +258,37 @@ func (x *Args) ClearRemoteUrlChecksum() {
 	x.xxx_hidden_RemoteUrlChecksum = nil
 }
 
+func (x *Args) ClearWorkDir() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_WorkDir = nil
+}
+
+func (x *Args) ClearAllowDownload() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_AllowDownload = false
+}
+
 type Args_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	PreferInstalled   *bool
-	RemoteUrl         *string
+	// Prefer an ffmpeg and ffprobe found on the PATH over the embedded copy or a
+	// download.
+	PreferInstalled *bool
+	// URL of an ffmpeg archive to download instead of the one listed in the
+	// built-in manifest. Setting it permits the download. (optional)
+	RemoteUrl *string
+	// Checksum used to validate the contents of remote_url, in the form
+	// "sha256:<hex>". (optional)
 	RemoteUrlChecksum *string
-	AcceptLicense     []string
+	// Licenses that are acceptable for a build of ffmpeg downloaded from the
+	// built-in manifest (e.g. "LGPL-3.0"), in order of preference.
+	AcceptLicense []string
+	// Directory ffmpeg and ffprobe are installed into and reused from. Defaults
+	// to a directory for ffembed in the user's cache directory.
+	WorkDir *string
+	// Permit downloading the build listed in the built-in manifest when ffmpeg
+	// is not available any other way.
+	AllowDownload *bool
 }
 
 func (b0 Args_builder) Build() *Args {
@@ -174,26 +296,47 @@ func (b0 Args_builder) Build() *Args {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.PreferInstalled != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_PreferInstalled = *b.PreferInstalled
 	}
 	if b.RemoteUrl != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_RemoteUrl = b.RemoteUrl
 	}
 	if b.RemoteUrlChecksum != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
 		x.xxx_hidden_RemoteUrlChecksum = b.RemoteUrlChecksum
 	}
 	x.xxx_hidden_AcceptLicense = b.AcceptLicense
+	if b.WorkDir != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
+		x.xxx_hidden_WorkDir = b.WorkDir
+	}
+	if b.AllowDownload != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_AllowDownload = *b.AllowDownload
+	}
 	return m0
 }
 
 type FfmpegRequest struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Args []string               `protobuf:"bytes,1,rep,name=args"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Args         []string               `protobuf:"bytes,1,rep,name=args"`
+	xxx_hidden_Inputs       []string               `protobuf:"bytes,2,rep,name=inputs"`
+	xxx_hidden_Output       *string                `protobuf:"bytes,3,opt,name=output"`
+	xxx_hidden_VideoCodec   *string                `protobuf:"bytes,4,opt,name=video_codec,json=videoCodec"`
+	xxx_hidden_AudioCodec   *string                `protobuf:"bytes,5,opt,name=audio_codec,json=audioCodec"`
+	xxx_hidden_Crf          int32                  `protobuf:"varint,6,opt,name=crf"`
+	xxx_hidden_Preset       *string                `protobuf:"bytes,7,opt,name=preset"`
+	xxx_hidden_VideoBitrate *string                `protobuf:"bytes,8,opt,name=video_bitrate,json=videoBitrate"`
+	xxx_hidden_AudioBitrate *string                `protobuf:"bytes,9,opt,name=audio_bitrate,json=audioBitrate"`
+	xxx_hidden_Format       *string                `protobuf:"bytes,10,opt,name=format"`
+	xxx_hidden_Overwrite    bool                   `protobuf:"varint,11,opt,name=overwrite"`
+	xxx_hidden_Faststart    bool                   `protobuf:"varint,12,opt,name=faststart"`
+	XXX_raceDetectHookData  protoimpl.RaceDetectHookData
+	XXX_presence            [1]uint32
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *FfmpegRequest) Reset() {
@@ -228,8 +371,280 @@ func (x *FfmpegRequest) GetArgs() []string {
 	return nil
 }
 
+func (x *FfmpegRequest) GetInputs() []string {
+	if x != nil {
+		return x.xxx_hidden_Inputs
+	}
+	return nil
+}
+
+func (x *FfmpegRequest) GetOutput() string {
+	if x != nil {
+		if x.xxx_hidden_Output != nil {
+			return *x.xxx_hidden_Output
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegRequest) GetVideoCodec() string {
+	if x != nil {
+		if x.xxx_hidden_VideoCodec != nil {
+			return *x.xxx_hidden_VideoCodec
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegRequest) GetAudioCodec() string {
+	if x != nil {
+		if x.xxx_hidden_AudioCodec != nil {
+			return *x.xxx_hidden_AudioCodec
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegRequest) GetCrf() int32 {
+	if x != nil {
+		return x.xxx_hidden_Crf
+	}
+	return 0
+}
+
+func (x *FfmpegRequest) GetPreset() string {
+	if x != nil {
+		if x.xxx_hidden_Preset != nil {
+			return *x.xxx_hidden_Preset
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegRequest) GetVideoBitrate() string {
+	if x != nil {
+		if x.xxx_hidden_VideoBitrate != nil {
+			return *x.xxx_hidden_VideoBitrate
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegRequest) GetAudioBitrate() string {
+	if x != nil {
+		if x.xxx_hidden_AudioBitrate != nil {
+			return *x.xxx_hidden_AudioBitrate
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegRequest) GetFormat() string {
+	if x != nil {
+		if x.xxx_hidden_Format != nil {
+			return *x.xxx_hidden_Format
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegRequest) GetOverwrite() bool {
+	if x != nil {
+		return x.xxx_hidden_Overwrite
+	}
+	return false
+}
+
+func (x *FfmpegRequest) GetFaststart() bool {
+	if x != nil {
+		return x.xxx_hidden_Faststart
+	}
+	return false
+}
+
 func (x *FfmpegRequest) SetArgs(v []string) {
 	x.xxx_hidden_Args = v
+}
+
+func (x *FfmpegRequest) SetInputs(v []string) {
+	x.xxx_hidden_Inputs = v
+}
+
+func (x *FfmpegRequest) SetOutput(v string) {
+	x.xxx_hidden_Output = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 12)
+}
+
+func (x *FfmpegRequest) SetVideoCodec(v string) {
+	x.xxx_hidden_VideoCodec = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
+}
+
+func (x *FfmpegRequest) SetAudioCodec(v string) {
+	x.xxx_hidden_AudioCodec = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 12)
+}
+
+func (x *FfmpegRequest) SetCrf(v int32) {
+	x.xxx_hidden_Crf = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 12)
+}
+
+func (x *FfmpegRequest) SetPreset(v string) {
+	x.xxx_hidden_Preset = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 12)
+}
+
+func (x *FfmpegRequest) SetVideoBitrate(v string) {
+	x.xxx_hidden_VideoBitrate = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 12)
+}
+
+func (x *FfmpegRequest) SetAudioBitrate(v string) {
+	x.xxx_hidden_AudioBitrate = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
+}
+
+func (x *FfmpegRequest) SetFormat(v string) {
+	x.xxx_hidden_Format = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
+}
+
+func (x *FfmpegRequest) SetOverwrite(v bool) {
+	x.xxx_hidden_Overwrite = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
+}
+
+func (x *FfmpegRequest) SetFaststart(v bool) {
+	x.xxx_hidden_Faststart = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 12)
+}
+
+func (x *FfmpegRequest) HasOutput() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfmpegRequest) HasVideoCodec() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FfmpegRequest) HasAudioCodec() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *FfmpegRequest) HasCrf() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *FfmpegRequest) HasPreset() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *FfmpegRequest) HasVideoBitrate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *FfmpegRequest) HasAudioBitrate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *FfmpegRequest) HasFormat() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
+func (x *FfmpegRequest) HasOverwrite() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+}
+
+func (x *FfmpegRequest) HasFaststart() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
+func (x *FfmpegRequest) ClearOutput() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Output = nil
+}
+
+func (x *FfmpegRequest) ClearVideoCodec() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_VideoCodec = nil
+}
+
+func (x *FfmpegRequest) ClearAudioCodec() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_AudioCodec = nil
+}
+
+func (x *FfmpegRequest) ClearCrf() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Crf = 0
+}
+
+func (x *FfmpegRequest) ClearPreset() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_Preset = nil
+}
+
+func (x *FfmpegRequest) ClearVideoBitrate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_VideoBitrate = nil
+}
+
+func (x *FfmpegRequest) ClearAudioBitrate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_AudioBitrate = nil
+}
+
+func (x *FfmpegRequest) ClearFormat() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_Format = nil
+}
+
+func (x *FfmpegRequest) ClearOverwrite() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	x.xxx_hidden_Overwrite = false
+}
+
+func (x *FfmpegRequest) ClearFaststart() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_Faststart = false
 }
 
 type FfmpegRequest_builder struct {
@@ -238,6 +653,30 @@ type FfmpegRequest_builder struct {
 	// Args is the raw arguments.
 	// If the args are specified then the other parameters cannot be set.
 	Args []string
+	// Input media files, each emitted as -i.
+	Inputs []string
+	// Output media file.
+	Output *string
+	// Video codec (e.g. "libx264"), emitted as -c:v.
+	VideoCodec *string
+	// Audio codec (e.g. "aac"), emitted as -c:a.
+	AudioCodec *string
+	// Constant rate factor, emitted as -crf.
+	Crf *int32
+	// Encoder preset (e.g. "veryfast"), emitted as -preset.
+	Preset *string
+	// Video bitrate (e.g. "2M"), emitted as -b:v.
+	VideoBitrate *string
+	// Audio bitrate (e.g. "128k"), emitted as -b:a.
+	AudioBitrate *string
+	// Container format (e.g. "mp4"), emitted as -f.
+	Format *string
+	// Replace the output when it exists, emitted as -y. Otherwise -n is emitted
+	// and ffmpeg fails rather than prompting.
+	Overwrite *bool
+	// Move the index of an MP4 or MOV output to its start so it can be played
+	// while it downloads, emitted as -movflags +faststart.
+	Faststart *bool
 }
 
 func (b0 FfmpegRequest_builder) Build() *FfmpegRequest {
@@ -245,18 +684,393 @@ func (b0 FfmpegRequest_builder) Build() *FfmpegRequest {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Args = b.Args
+	x.xxx_hidden_Inputs = b.Inputs
+	if b.Output != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 12)
+		x.xxx_hidden_Output = b.Output
+	}
+	if b.VideoCodec != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
+		x.xxx_hidden_VideoCodec = b.VideoCodec
+	}
+	if b.AudioCodec != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 12)
+		x.xxx_hidden_AudioCodec = b.AudioCodec
+	}
+	if b.Crf != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 12)
+		x.xxx_hidden_Crf = *b.Crf
+	}
+	if b.Preset != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 12)
+		x.xxx_hidden_Preset = b.Preset
+	}
+	if b.VideoBitrate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 12)
+		x.xxx_hidden_VideoBitrate = b.VideoBitrate
+	}
+	if b.AudioBitrate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
+		x.xxx_hidden_AudioBitrate = b.AudioBitrate
+	}
+	if b.Format != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
+		x.xxx_hidden_Format = b.Format
+	}
+	if b.Overwrite != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
+		x.xxx_hidden_Overwrite = *b.Overwrite
+	}
+	if b.Faststart != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 12)
+		x.xxx_hidden_Faststart = *b.Faststart
+	}
 	return m0
 }
 
+// FfmpegProgress is one progress report of ffmpeg.
+type FfmpegProgress struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Frame       int64                  `protobuf:"varint,1,opt,name=frame"`
+	xxx_hidden_Fps         float64                `protobuf:"fixed64,2,opt,name=fps"`
+	xxx_hidden_BitrateKbps float64                `protobuf:"fixed64,3,opt,name=bitrate_kbps,json=bitrateKbps"`
+	xxx_hidden_TotalSize   int64                  `protobuf:"varint,4,opt,name=total_size,json=totalSize"`
+	xxx_hidden_OutTimeUs   int64                  `protobuf:"varint,5,opt,name=out_time_us,json=outTimeUs"`
+	xxx_hidden_DupFrames   int64                  `protobuf:"varint,6,opt,name=dup_frames,json=dupFrames"`
+	xxx_hidden_DropFrames  int64                  `protobuf:"varint,7,opt,name=drop_frames,json=dropFrames"`
+	xxx_hidden_Speed       float64                `protobuf:"fixed64,8,opt,name=speed"`
+	xxx_hidden_Percent     float64                `protobuf:"fixed64,9,opt,name=percent"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *FfmpegProgress) Reset() {
+	*x = FfmpegProgress{}
+	mi := &file_proto_ffembed_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfmpegProgress) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfmpegProgress) ProtoMessage() {}
+
+func (x *FfmpegProgress) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FfmpegProgress) GetFrame() int64 {
+	if x != nil {
+		return x.xxx_hidden_Frame
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetFps() float64 {
+	if x != nil {
+		return x.xxx_hidden_Fps
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetBitrateKbps() float64 {
+	if x != nil {
+		return x.xxx_hidden_BitrateKbps
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetTotalSize() int64 {
+	if x != nil {
+		return x.xxx_hidden_TotalSize
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetOutTimeUs() int64 {
+	if x != nil {
+		return x.xxx_hidden_OutTimeUs
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetDupFrames() int64 {
+	if x != nil {
+		return x.xxx_hidden_DupFrames
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetDropFrames() int64 {
+	if x != nil {
+		return x.xxx_hidden_DropFrames
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetSpeed() float64 {
+	if x != nil {
+		return x.xxx_hidden_Speed
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) GetPercent() float64 {
+	if x != nil {
+		return x.xxx_hidden_Percent
+	}
+	return 0
+}
+
+func (x *FfmpegProgress) SetFrame(v int64) {
+	x.xxx_hidden_Frame = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+}
+
+func (x *FfmpegProgress) SetFps(v float64) {
+	x.xxx_hidden_Fps = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
+}
+
+func (x *FfmpegProgress) SetBitrateKbps(v float64) {
+	x.xxx_hidden_BitrateKbps = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
+}
+
+func (x *FfmpegProgress) SetTotalSize(v int64) {
+	x.xxx_hidden_TotalSize = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
+}
+
+func (x *FfmpegProgress) SetOutTimeUs(v int64) {
+	x.xxx_hidden_OutTimeUs = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
+}
+
+func (x *FfmpegProgress) SetDupFrames(v int64) {
+	x.xxx_hidden_DupFrames = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
+}
+
+func (x *FfmpegProgress) SetDropFrames(v int64) {
+	x.xxx_hidden_DropFrames = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 9)
+}
+
+func (x *FfmpegProgress) SetSpeed(v float64) {
+	x.xxx_hidden_Speed = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 9)
+}
+
+func (x *FfmpegProgress) SetPercent(v float64) {
+	x.xxx_hidden_Percent = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 9)
+}
+
+func (x *FfmpegProgress) HasFrame() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *FfmpegProgress) HasFps() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *FfmpegProgress) HasBitrateKbps() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfmpegProgress) HasTotalSize() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FfmpegProgress) HasOutTimeUs() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *FfmpegProgress) HasDupFrames() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *FfmpegProgress) HasDropFrames() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *FfmpegProgress) HasSpeed() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *FfmpegProgress) HasPercent() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *FfmpegProgress) ClearFrame() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Frame = 0
+}
+
+func (x *FfmpegProgress) ClearFps() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Fps = 0
+}
+
+func (x *FfmpegProgress) ClearBitrateKbps() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_BitrateKbps = 0
+}
+
+func (x *FfmpegProgress) ClearTotalSize() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_TotalSize = 0
+}
+
+func (x *FfmpegProgress) ClearOutTimeUs() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_OutTimeUs = 0
+}
+
+func (x *FfmpegProgress) ClearDupFrames() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_DupFrames = 0
+}
+
+func (x *FfmpegProgress) ClearDropFrames() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_DropFrames = 0
+}
+
+func (x *FfmpegProgress) ClearSpeed() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_Speed = 0
+}
+
+func (x *FfmpegProgress) ClearPercent() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_Percent = 0
+}
+
+type FfmpegProgress_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Frames processed so far.
+	Frame *int64
+	// Frames processed per second.
+	Fps *float64
+	// Bitrate of the output in kbit/s.
+	BitrateKbps *float64
+	// Size of the output so far in bytes.
+	TotalSize *int64
+	// Position in the output in microseconds.
+	OutTimeUs *int64
+	// Frames duplicated so far.
+	DupFrames *int64
+	// Frames dropped so far.
+	DropFrames *int64
+	// Processing speed relative to realtime, 2 is twice as fast.
+	Speed *float64
+	// How much of the first input is processed, from 0 to 100. Only set when
+	// the duration of the input is known, which it is not for live sources.
+	Percent *float64
+}
+
+func (b0 FfmpegProgress_builder) Build() *FfmpegProgress {
+	m0 := &FfmpegProgress{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Frame != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		x.xxx_hidden_Frame = *b.Frame
+	}
+	if b.Fps != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
+		x.xxx_hidden_Fps = *b.Fps
+	}
+	if b.BitrateKbps != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
+		x.xxx_hidden_BitrateKbps = *b.BitrateKbps
+	}
+	if b.TotalSize != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
+		x.xxx_hidden_TotalSize = *b.TotalSize
+	}
+	if b.OutTimeUs != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
+		x.xxx_hidden_OutTimeUs = *b.OutTimeUs
+	}
+	if b.DupFrames != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
+		x.xxx_hidden_DupFrames = *b.DupFrames
+	}
+	if b.DropFrames != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 9)
+		x.xxx_hidden_DropFrames = *b.DropFrames
+	}
+	if b.Speed != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 9)
+		x.xxx_hidden_Speed = *b.Speed
+	}
+	if b.Percent != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 9)
+		x.xxx_hidden_Percent = *b.Percent
+	}
+	return m0
+}
+
+// FfmpegEvent reports a change of a running ffmpeg.
 type FfmpegEvent struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_State       FfmpegState            `protobuf:"varint,1,opt,name=state,enum=cloudfra.ffembed.FfmpegState"`
+	xxx_hidden_Progress    *FfmpegProgress        `protobuf:"bytes,2,opt,name=progress"`
+	xxx_hidden_Log         *string                `protobuf:"bytes,3,opt,name=log"`
+	xxx_hidden_Output      *string                `protobuf:"bytes,4,opt,name=output"`
+	xxx_hidden_Response    *FfmpegResponse        `protobuf:"bytes,5,opt,name=response"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *FfmpegEvent) Reset() {
 	*x = FfmpegEvent{}
-	mi := &file_proto_ffembed_proto_msgTypes[2]
+	mi := &file_proto_ffembed_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -268,7 +1082,7 @@ func (x *FfmpegEvent) String() string {
 func (*FfmpegEvent) ProtoMessage() {}
 
 func (x *FfmpegEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_ffembed_proto_msgTypes[2]
+	mi := &file_proto_ffembed_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -279,27 +1093,185 @@ func (x *FfmpegEvent) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *FfmpegEvent) GetState() FfmpegState {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
+			return x.xxx_hidden_State
+		}
+	}
+	return FfmpegState_FFMPEG_STATE_UNSPECIFIED
+}
+
+func (x *FfmpegEvent) GetProgress() *FfmpegProgress {
+	if x != nil {
+		return x.xxx_hidden_Progress
+	}
+	return nil
+}
+
+func (x *FfmpegEvent) GetLog() string {
+	if x != nil {
+		if x.xxx_hidden_Log != nil {
+			return *x.xxx_hidden_Log
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegEvent) GetOutput() string {
+	if x != nil {
+		if x.xxx_hidden_Output != nil {
+			return *x.xxx_hidden_Output
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegEvent) GetResponse() *FfmpegResponse {
+	if x != nil {
+		return x.xxx_hidden_Response
+	}
+	return nil
+}
+
+func (x *FfmpegEvent) SetState(v FfmpegState) {
+	x.xxx_hidden_State = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *FfmpegEvent) SetProgress(v *FfmpegProgress) {
+	x.xxx_hidden_Progress = v
+}
+
+func (x *FfmpegEvent) SetLog(v string) {
+	x.xxx_hidden_Log = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *FfmpegEvent) SetOutput(v string) {
+	x.xxx_hidden_Output = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *FfmpegEvent) SetResponse(v *FfmpegResponse) {
+	x.xxx_hidden_Response = v
+}
+
+func (x *FfmpegEvent) HasState() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *FfmpegEvent) HasProgress() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Progress != nil
+}
+
+func (x *FfmpegEvent) HasLog() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfmpegEvent) HasOutput() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FfmpegEvent) HasResponse() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Response != nil
+}
+
+func (x *FfmpegEvent) ClearState() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_State = FfmpegState_FFMPEG_STATE_UNSPECIFIED
+}
+
+func (x *FfmpegEvent) ClearProgress() {
+	x.xxx_hidden_Progress = nil
+}
+
+func (x *FfmpegEvent) ClearLog() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Log = nil
+}
+
+func (x *FfmpegEvent) ClearOutput() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Output = nil
+}
+
+func (x *FfmpegEvent) ClearResponse() {
+	x.xxx_hidden_Response = nil
+}
+
 type FfmpegEvent_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	State *FfmpegState
+	// Progress report, set when ffmpeg reported progress.
+	Progress *FfmpegProgress
+	// Line ffmpeg wrote to its log (stderr), set for log events.
+	Log *string
+	// Line ffmpeg wrote to stdout that is not a progress report, set for
+	// output events (e.g. the result of -version).
+	Output *string
+	// Result of the run, set on the last event.
+	Response *FfmpegResponse
 }
 
 func (b0 FfmpegEvent_builder) Build() *FfmpegEvent {
 	m0 := &FfmpegEvent{}
 	b, x := &b0, m0
 	_, _ = b, x
+	if b.State != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_State = *b.State
+	}
+	x.xxx_hidden_Progress = b.Progress
+	if b.Log != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_Log = b.Log
+	}
+	if b.Output != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Output = b.Output
+	}
+	x.xxx_hidden_Response = b.Response
 	return m0
 }
 
+// FfmpegResponse is the result of a finished ffmpeg.
 type FfmpegResponse struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_State           FfmpegState            `protobuf:"varint,1,opt,name=state,enum=cloudfra.ffembed.FfmpegState"`
+	xxx_hidden_ExitCode        int32                  `protobuf:"varint,2,opt,name=exit_code,json=exitCode"`
+	xxx_hidden_Output          *string                `protobuf:"bytes,3,opt,name=output"`
+	xxx_hidden_Log             *string                `protobuf:"bytes,4,opt,name=log"`
+	xxx_hidden_ProgressReports int64                  `protobuf:"varint,5,opt,name=progress_reports,json=progressReports"`
+	xxx_hidden_LastFrame       int64                  `protobuf:"varint,6,opt,name=last_frame,json=lastFrame"`
+	xxx_hidden_MaxFps          float64                `protobuf:"fixed64,7,opt,name=max_fps,json=maxFps"`
+	XXX_raceDetectHookData     protoimpl.RaceDetectHookData
+	XXX_presence               [1]uint32
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *FfmpegResponse) Reset() {
 	*x = FfmpegResponse{}
-	mi := &file_proto_ffembed_proto_msgTypes[3]
+	mi := &file_proto_ffembed_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -311,7 +1283,7 @@ func (x *FfmpegResponse) String() string {
 func (*FfmpegResponse) ProtoMessage() {}
 
 func (x *FfmpegResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_ffembed_proto_msgTypes[3]
+	mi := &file_proto_ffembed_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -322,28 +1294,253 @@ func (x *FfmpegResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *FfmpegResponse) GetState() FfmpegState {
+	if x != nil {
+		if protoimpl.X.Present(&(x.XXX_presence[0]), 0) {
+			return x.xxx_hidden_State
+		}
+	}
+	return FfmpegState_FFMPEG_STATE_UNSPECIFIED
+}
+
+func (x *FfmpegResponse) GetExitCode() int32 {
+	if x != nil {
+		return x.xxx_hidden_ExitCode
+	}
+	return 0
+}
+
+func (x *FfmpegResponse) GetOutput() string {
+	if x != nil {
+		if x.xxx_hidden_Output != nil {
+			return *x.xxx_hidden_Output
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegResponse) GetLog() string {
+	if x != nil {
+		if x.xxx_hidden_Log != nil {
+			return *x.xxx_hidden_Log
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfmpegResponse) GetProgressReports() int64 {
+	if x != nil {
+		return x.xxx_hidden_ProgressReports
+	}
+	return 0
+}
+
+func (x *FfmpegResponse) GetLastFrame() int64 {
+	if x != nil {
+		return x.xxx_hidden_LastFrame
+	}
+	return 0
+}
+
+func (x *FfmpegResponse) GetMaxFps() float64 {
+	if x != nil {
+		return x.xxx_hidden_MaxFps
+	}
+	return 0
+}
+
+func (x *FfmpegResponse) SetState(v FfmpegState) {
+	x.xxx_hidden_State = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+}
+
+func (x *FfmpegResponse) SetExitCode(v int32) {
+	x.xxx_hidden_ExitCode = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+}
+
+func (x *FfmpegResponse) SetOutput(v string) {
+	x.xxx_hidden_Output = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+}
+
+func (x *FfmpegResponse) SetLog(v string) {
+	x.xxx_hidden_Log = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
+}
+
+func (x *FfmpegResponse) SetProgressReports(v int64) {
+	x.xxx_hidden_ProgressReports = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
+}
+
+func (x *FfmpegResponse) SetLastFrame(v int64) {
+	x.xxx_hidden_LastFrame = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 7)
+}
+
+func (x *FfmpegResponse) SetMaxFps(v float64) {
+	x.xxx_hidden_MaxFps = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 7)
+}
+
+func (x *FfmpegResponse) HasState() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *FfmpegResponse) HasExitCode() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *FfmpegResponse) HasOutput() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfmpegResponse) HasLog() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FfmpegResponse) HasProgressReports() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *FfmpegResponse) HasLastFrame() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *FfmpegResponse) HasMaxFps() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *FfmpegResponse) ClearState() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_State = FfmpegState_FFMPEG_STATE_UNSPECIFIED
+}
+
+func (x *FfmpegResponse) ClearExitCode() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_ExitCode = 0
+}
+
+func (x *FfmpegResponse) ClearOutput() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Output = nil
+}
+
+func (x *FfmpegResponse) ClearLog() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Log = nil
+}
+
+func (x *FfmpegResponse) ClearProgressReports() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_ProgressReports = 0
+}
+
+func (x *FfmpegResponse) ClearLastFrame() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_LastFrame = 0
+}
+
+func (x *FfmpegResponse) ClearMaxFps() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_MaxFps = 0
+}
+
 type FfmpegResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// State ffmpeg finished in: completed, failed, or cancelled.
+	State *FfmpegState
+	// Exit code of ffmpeg, -1 when it was killed.
+	ExitCode *int32
+	// Output file of the request, when it named one.
+	Output *string
+	// Last lines ffmpeg wrote to its log (stderr) when it did not complete.
+	Log *string
+	// Number of progress reports ffmpeg made.
+	ProgressReports *int64
+	// Last frame count ffmpeg reported.
+	LastFrame *int64
+	// Highest frames per second ffmpeg reported.
+	MaxFps *float64
 }
 
 func (b0 FfmpegResponse_builder) Build() *FfmpegResponse {
 	m0 := &FfmpegResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
+	if b.State != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_State = *b.State
+	}
+	if b.ExitCode != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_ExitCode = *b.ExitCode
+	}
+	if b.Output != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_Output = b.Output
+	}
+	if b.Log != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
+		x.xxx_hidden_Log = b.Log
+	}
+	if b.ProgressReports != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
+		x.xxx_hidden_ProgressReports = *b.ProgressReports
+	}
+	if b.LastFrame != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 7)
+		x.xxx_hidden_LastFrame = *b.LastFrame
+	}
+	if b.MaxFps != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 7)
+		x.xxx_hidden_MaxFps = *b.MaxFps
+	}
 	return m0
 }
 
 type FfprobeRequest struct {
-	state           protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Args []string               `protobuf:"bytes,1,rep,name=args"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Args          []string               `protobuf:"bytes,1,rep,name=args"`
+	xxx_hidden_Input         *string                `protobuf:"bytes,2,opt,name=input"`
+	xxx_hidden_ShowFormat    bool                   `protobuf:"varint,3,opt,name=show_format,json=showFormat"`
+	xxx_hidden_ShowStreams   bool                   `protobuf:"varint,4,opt,name=show_streams,json=showStreams"`
+	xxx_hidden_ShowChapters  bool                   `protobuf:"varint,5,opt,name=show_chapters,json=showChapters"`
+	xxx_hidden_SelectStreams *string                `protobuf:"bytes,6,opt,name=select_streams,json=selectStreams"`
+	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
+	XXX_presence             [1]uint32
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *FfprobeRequest) Reset() {
 	*x = FfprobeRequest{}
-	mi := &file_proto_ffembed_proto_msgTypes[4]
+	mi := &file_proto_ffembed_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -355,7 +1552,7 @@ func (x *FfprobeRequest) String() string {
 func (*FfprobeRequest) ProtoMessage() {}
 
 func (x *FfprobeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_ffembed_proto_msgTypes[4]
+	mi := &file_proto_ffembed_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -373,8 +1570,134 @@ func (x *FfprobeRequest) GetArgs() []string {
 	return nil
 }
 
+func (x *FfprobeRequest) GetInput() string {
+	if x != nil {
+		if x.xxx_hidden_Input != nil {
+			return *x.xxx_hidden_Input
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeRequest) GetShowFormat() bool {
+	if x != nil {
+		return x.xxx_hidden_ShowFormat
+	}
+	return false
+}
+
+func (x *FfprobeRequest) GetShowStreams() bool {
+	if x != nil {
+		return x.xxx_hidden_ShowStreams
+	}
+	return false
+}
+
+func (x *FfprobeRequest) GetShowChapters() bool {
+	if x != nil {
+		return x.xxx_hidden_ShowChapters
+	}
+	return false
+}
+
+func (x *FfprobeRequest) GetSelectStreams() string {
+	if x != nil {
+		if x.xxx_hidden_SelectStreams != nil {
+			return *x.xxx_hidden_SelectStreams
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *FfprobeRequest) SetArgs(v []string) {
 	x.xxx_hidden_Args = v
+}
+
+func (x *FfprobeRequest) SetInput(v string) {
+	x.xxx_hidden_Input = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
+}
+
+func (x *FfprobeRequest) SetShowFormat(v bool) {
+	x.xxx_hidden_ShowFormat = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+}
+
+func (x *FfprobeRequest) SetShowStreams(v bool) {
+	x.xxx_hidden_ShowStreams = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
+}
+
+func (x *FfprobeRequest) SetShowChapters(v bool) {
+	x.xxx_hidden_ShowChapters = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+}
+
+func (x *FfprobeRequest) SetSelectStreams(v string) {
+	x.xxx_hidden_SelectStreams = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
+}
+
+func (x *FfprobeRequest) HasInput() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *FfprobeRequest) HasShowFormat() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfprobeRequest) HasShowStreams() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FfprobeRequest) HasShowChapters() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *FfprobeRequest) HasSelectStreams() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *FfprobeRequest) ClearInput() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Input = nil
+}
+
+func (x *FfprobeRequest) ClearShowFormat() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_ShowFormat = false
+}
+
+func (x *FfprobeRequest) ClearShowStreams() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_ShowStreams = false
+}
+
+func (x *FfprobeRequest) ClearShowChapters() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_ShowChapters = false
+}
+
+func (x *FfprobeRequest) ClearSelectStreams() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_SelectStreams = nil
 }
 
 type FfprobeRequest_builder struct {
@@ -383,6 +1706,17 @@ type FfprobeRequest_builder struct {
 	// Args is the raw arguments.
 	// If the args are specified then the other parameters cannot be set.
 	Args []string
+	// Input media file to probe.
+	Input *string
+	// Include container metadata. When none of the show fields are set the
+	// format and the streams are included.
+	ShowFormat *bool
+	// Include metadata of every stream.
+	ShowStreams *bool
+	// Include chapter metadata.
+	ShowChapters *bool
+	// Only report the matching streams (e.g. "v:0"), emitted as -select_streams.
+	SelectStreams *string
 }
 
 func (b0 FfprobeRequest_builder) Build() *FfprobeRequest {
@@ -390,18 +1724,1175 @@ func (b0 FfprobeRequest_builder) Build() *FfprobeRequest {
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Args = b.Args
+	if b.Input != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		x.xxx_hidden_Input = b.Input
+	}
+	if b.ShowFormat != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		x.xxx_hidden_ShowFormat = *b.ShowFormat
+	}
+	if b.ShowStreams != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
+		x.xxx_hidden_ShowStreams = *b.ShowStreams
+	}
+	if b.ShowChapters != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
+		x.xxx_hidden_ShowChapters = *b.ShowChapters
+	}
+	if b.SelectStreams != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_SelectStreams = b.SelectStreams
+	}
+	return m0
+}
+
+type FfprobeFormat struct {
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Filename       *string                `protobuf:"bytes,1,opt,name=filename"`
+	xxx_hidden_FormatName     *string                `protobuf:"bytes,2,opt,name=format_name,json=formatName"`
+	xxx_hidden_FormatLongName *string                `protobuf:"bytes,3,opt,name=format_long_name,json=formatLongName"`
+	xxx_hidden_StartTime      float64                `protobuf:"fixed64,4,opt,name=start_time,json=startTime"`
+	xxx_hidden_Duration       float64                `protobuf:"fixed64,5,opt,name=duration"`
+	xxx_hidden_Size           int64                  `protobuf:"varint,6,opt,name=size"`
+	xxx_hidden_BitRate        int64                  `protobuf:"varint,7,opt,name=bit_rate,json=bitRate"`
+	xxx_hidden_NbStreams      int32                  `protobuf:"varint,8,opt,name=nb_streams,json=nbStreams"`
+	xxx_hidden_Tags           map[string]string      `protobuf:"bytes,9,rep,name=tags" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *FfprobeFormat) Reset() {
+	*x = FfprobeFormat{}
+	mi := &file_proto_ffembed_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfprobeFormat) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfprobeFormat) ProtoMessage() {}
+
+func (x *FfprobeFormat) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FfprobeFormat) GetFilename() string {
+	if x != nil {
+		if x.xxx_hidden_Filename != nil {
+			return *x.xxx_hidden_Filename
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeFormat) GetFormatName() string {
+	if x != nil {
+		if x.xxx_hidden_FormatName != nil {
+			return *x.xxx_hidden_FormatName
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeFormat) GetFormatLongName() string {
+	if x != nil {
+		if x.xxx_hidden_FormatLongName != nil {
+			return *x.xxx_hidden_FormatLongName
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeFormat) GetStartTime() float64 {
+	if x != nil {
+		return x.xxx_hidden_StartTime
+	}
+	return 0
+}
+
+func (x *FfprobeFormat) GetDuration() float64 {
+	if x != nil {
+		return x.xxx_hidden_Duration
+	}
+	return 0
+}
+
+func (x *FfprobeFormat) GetSize() int64 {
+	if x != nil {
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *FfprobeFormat) GetBitRate() int64 {
+	if x != nil {
+		return x.xxx_hidden_BitRate
+	}
+	return 0
+}
+
+func (x *FfprobeFormat) GetNbStreams() int32 {
+	if x != nil {
+		return x.xxx_hidden_NbStreams
+	}
+	return 0
+}
+
+func (x *FfprobeFormat) GetTags() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Tags
+	}
+	return nil
+}
+
+func (x *FfprobeFormat) SetFilename(v string) {
+	x.xxx_hidden_Filename = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+}
+
+func (x *FfprobeFormat) SetFormatName(v string) {
+	x.xxx_hidden_FormatName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
+}
+
+func (x *FfprobeFormat) SetFormatLongName(v string) {
+	x.xxx_hidden_FormatLongName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
+}
+
+func (x *FfprobeFormat) SetStartTime(v float64) {
+	x.xxx_hidden_StartTime = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
+}
+
+func (x *FfprobeFormat) SetDuration(v float64) {
+	x.xxx_hidden_Duration = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
+}
+
+func (x *FfprobeFormat) SetSize(v int64) {
+	x.xxx_hidden_Size = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
+}
+
+func (x *FfprobeFormat) SetBitRate(v int64) {
+	x.xxx_hidden_BitRate = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 9)
+}
+
+func (x *FfprobeFormat) SetNbStreams(v int32) {
+	x.xxx_hidden_NbStreams = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 9)
+}
+
+func (x *FfprobeFormat) SetTags(v map[string]string) {
+	x.xxx_hidden_Tags = v
+}
+
+func (x *FfprobeFormat) HasFilename() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *FfprobeFormat) HasFormatName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *FfprobeFormat) HasFormatLongName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfprobeFormat) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FfprobeFormat) HasDuration() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *FfprobeFormat) HasSize() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *FfprobeFormat) HasBitRate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *FfprobeFormat) HasNbStreams() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *FfprobeFormat) ClearFilename() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Filename = nil
+}
+
+func (x *FfprobeFormat) ClearFormatName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_FormatName = nil
+}
+
+func (x *FfprobeFormat) ClearFormatLongName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_FormatLongName = nil
+}
+
+func (x *FfprobeFormat) ClearStartTime() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_StartTime = 0
+}
+
+func (x *FfprobeFormat) ClearDuration() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Duration = 0
+}
+
+func (x *FfprobeFormat) ClearSize() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Size = 0
+}
+
+func (x *FfprobeFormat) ClearBitRate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_BitRate = 0
+}
+
+func (x *FfprobeFormat) ClearNbStreams() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_NbStreams = 0
+}
+
+type FfprobeFormat_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Filename *string
+	// Container format names (e.g. "mov,mp4,m4a,3gp,3g2,mj2").
+	FormatName     *string
+	FormatLongName *string
+	// Start time in seconds.
+	StartTime *float64
+	// Duration in seconds.
+	Duration *float64
+	// Size in bytes.
+	Size *int64
+	// Bits per second.
+	BitRate   *int64
+	NbStreams *int32
+	Tags      map[string]string
+}
+
+func (b0 FfprobeFormat_builder) Build() *FfprobeFormat {
+	m0 := &FfprobeFormat{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Filename != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		x.xxx_hidden_Filename = b.Filename
+	}
+	if b.FormatName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
+		x.xxx_hidden_FormatName = b.FormatName
+	}
+	if b.FormatLongName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
+		x.xxx_hidden_FormatLongName = b.FormatLongName
+	}
+	if b.StartTime != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
+		x.xxx_hidden_StartTime = *b.StartTime
+	}
+	if b.Duration != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
+		x.xxx_hidden_Duration = *b.Duration
+	}
+	if b.Size != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
+		x.xxx_hidden_Size = *b.Size
+	}
+	if b.BitRate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 9)
+		x.xxx_hidden_BitRate = *b.BitRate
+	}
+	if b.NbStreams != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 9)
+		x.xxx_hidden_NbStreams = *b.NbStreams
+	}
+	x.xxx_hidden_Tags = b.Tags
+	return m0
+}
+
+type FfprobeStream struct {
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Index          int32                  `protobuf:"varint,1,opt,name=index"`
+	xxx_hidden_CodecName      *string                `protobuf:"bytes,2,opt,name=codec_name,json=codecName"`
+	xxx_hidden_CodecLongName  *string                `protobuf:"bytes,3,opt,name=codec_long_name,json=codecLongName"`
+	xxx_hidden_CodecType      *string                `protobuf:"bytes,4,opt,name=codec_type,json=codecType"`
+	xxx_hidden_Profile        *string                `protobuf:"bytes,5,opt,name=profile"`
+	xxx_hidden_Width          int32                  `protobuf:"varint,6,opt,name=width"`
+	xxx_hidden_Height         int32                  `protobuf:"varint,7,opt,name=height"`
+	xxx_hidden_PixFmt         *string                `protobuf:"bytes,8,opt,name=pix_fmt,json=pixFmt"`
+	xxx_hidden_RFrameRate     *string                `protobuf:"bytes,9,opt,name=r_frame_rate,json=rFrameRate"`
+	xxx_hidden_AvgFrameRate   *string                `protobuf:"bytes,10,opt,name=avg_frame_rate,json=avgFrameRate"`
+	xxx_hidden_SampleRate     int32                  `protobuf:"varint,11,opt,name=sample_rate,json=sampleRate"`
+	xxx_hidden_Channels       int32                  `protobuf:"varint,12,opt,name=channels"`
+	xxx_hidden_ChannelLayout  *string                `protobuf:"bytes,13,opt,name=channel_layout,json=channelLayout"`
+	xxx_hidden_Duration       float64                `protobuf:"fixed64,14,opt,name=duration"`
+	xxx_hidden_BitRate        int64                  `protobuf:"varint,15,opt,name=bit_rate,json=bitRate"`
+	xxx_hidden_NbFrames       int64                  `protobuf:"varint,16,opt,name=nb_frames,json=nbFrames"`
+	xxx_hidden_Tags           map[string]string      `protobuf:"bytes,17,rep,name=tags" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_CodecTagString *string                `protobuf:"bytes,18,opt,name=codec_tag_string,json=codecTagString"`
+	xxx_hidden_Level          int32                  `protobuf:"varint,19,opt,name=level"`
+	xxx_hidden_BitsPerSample  int32                  `protobuf:"varint,20,opt,name=bits_per_sample,json=bitsPerSample"`
+	XXX_raceDetectHookData    protoimpl.RaceDetectHookData
+	XXX_presence              [1]uint32
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *FfprobeStream) Reset() {
+	*x = FfprobeStream{}
+	mi := &file_proto_ffembed_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfprobeStream) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfprobeStream) ProtoMessage() {}
+
+func (x *FfprobeStream) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FfprobeStream) GetIndex() int32 {
+	if x != nil {
+		return x.xxx_hidden_Index
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetCodecName() string {
+	if x != nil {
+		if x.xxx_hidden_CodecName != nil {
+			return *x.xxx_hidden_CodecName
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetCodecLongName() string {
+	if x != nil {
+		if x.xxx_hidden_CodecLongName != nil {
+			return *x.xxx_hidden_CodecLongName
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetCodecType() string {
+	if x != nil {
+		if x.xxx_hidden_CodecType != nil {
+			return *x.xxx_hidden_CodecType
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetProfile() string {
+	if x != nil {
+		if x.xxx_hidden_Profile != nil {
+			return *x.xxx_hidden_Profile
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetWidth() int32 {
+	if x != nil {
+		return x.xxx_hidden_Width
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetHeight() int32 {
+	if x != nil {
+		return x.xxx_hidden_Height
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetPixFmt() string {
+	if x != nil {
+		if x.xxx_hidden_PixFmt != nil {
+			return *x.xxx_hidden_PixFmt
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetRFrameRate() string {
+	if x != nil {
+		if x.xxx_hidden_RFrameRate != nil {
+			return *x.xxx_hidden_RFrameRate
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetAvgFrameRate() string {
+	if x != nil {
+		if x.xxx_hidden_AvgFrameRate != nil {
+			return *x.xxx_hidden_AvgFrameRate
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetSampleRate() int32 {
+	if x != nil {
+		return x.xxx_hidden_SampleRate
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetChannels() int32 {
+	if x != nil {
+		return x.xxx_hidden_Channels
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetChannelLayout() string {
+	if x != nil {
+		if x.xxx_hidden_ChannelLayout != nil {
+			return *x.xxx_hidden_ChannelLayout
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetDuration() float64 {
+	if x != nil {
+		return x.xxx_hidden_Duration
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetBitRate() int64 {
+	if x != nil {
+		return x.xxx_hidden_BitRate
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetNbFrames() int64 {
+	if x != nil {
+		return x.xxx_hidden_NbFrames
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetTags() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Tags
+	}
+	return nil
+}
+
+func (x *FfprobeStream) GetCodecTagString() string {
+	if x != nil {
+		if x.xxx_hidden_CodecTagString != nil {
+			return *x.xxx_hidden_CodecTagString
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeStream) GetLevel() int32 {
+	if x != nil {
+		return x.xxx_hidden_Level
+	}
+	return 0
+}
+
+func (x *FfprobeStream) GetBitsPerSample() int32 {
+	if x != nil {
+		return x.xxx_hidden_BitsPerSample
+	}
+	return 0
+}
+
+func (x *FfprobeStream) SetIndex(v int32) {
+	x.xxx_hidden_Index = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 20)
+}
+
+func (x *FfprobeStream) SetCodecName(v string) {
+	x.xxx_hidden_CodecName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 20)
+}
+
+func (x *FfprobeStream) SetCodecLongName(v string) {
+	x.xxx_hidden_CodecLongName = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 20)
+}
+
+func (x *FfprobeStream) SetCodecType(v string) {
+	x.xxx_hidden_CodecType = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 20)
+}
+
+func (x *FfprobeStream) SetProfile(v string) {
+	x.xxx_hidden_Profile = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 20)
+}
+
+func (x *FfprobeStream) SetWidth(v int32) {
+	x.xxx_hidden_Width = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 20)
+}
+
+func (x *FfprobeStream) SetHeight(v int32) {
+	x.xxx_hidden_Height = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 20)
+}
+
+func (x *FfprobeStream) SetPixFmt(v string) {
+	x.xxx_hidden_PixFmt = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 20)
+}
+
+func (x *FfprobeStream) SetRFrameRate(v string) {
+	x.xxx_hidden_RFrameRate = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 20)
+}
+
+func (x *FfprobeStream) SetAvgFrameRate(v string) {
+	x.xxx_hidden_AvgFrameRate = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 20)
+}
+
+func (x *FfprobeStream) SetSampleRate(v int32) {
+	x.xxx_hidden_SampleRate = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 20)
+}
+
+func (x *FfprobeStream) SetChannels(v int32) {
+	x.xxx_hidden_Channels = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 20)
+}
+
+func (x *FfprobeStream) SetChannelLayout(v string) {
+	x.xxx_hidden_ChannelLayout = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 12, 20)
+}
+
+func (x *FfprobeStream) SetDuration(v float64) {
+	x.xxx_hidden_Duration = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 13, 20)
+}
+
+func (x *FfprobeStream) SetBitRate(v int64) {
+	x.xxx_hidden_BitRate = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 14, 20)
+}
+
+func (x *FfprobeStream) SetNbFrames(v int64) {
+	x.xxx_hidden_NbFrames = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 15, 20)
+}
+
+func (x *FfprobeStream) SetTags(v map[string]string) {
+	x.xxx_hidden_Tags = v
+}
+
+func (x *FfprobeStream) SetCodecTagString(v string) {
+	x.xxx_hidden_CodecTagString = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 17, 20)
+}
+
+func (x *FfprobeStream) SetLevel(v int32) {
+	x.xxx_hidden_Level = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 18, 20)
+}
+
+func (x *FfprobeStream) SetBitsPerSample(v int32) {
+	x.xxx_hidden_BitsPerSample = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 19, 20)
+}
+
+func (x *FfprobeStream) HasIndex() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *FfprobeStream) HasCodecName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *FfprobeStream) HasCodecLongName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfprobeStream) HasCodecType() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FfprobeStream) HasProfile() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *FfprobeStream) HasWidth() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *FfprobeStream) HasHeight() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *FfprobeStream) HasPixFmt() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *FfprobeStream) HasRFrameRate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
+}
+
+func (x *FfprobeStream) HasAvgFrameRate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
+func (x *FfprobeStream) HasSampleRate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+}
+
+func (x *FfprobeStream) HasChannels() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
+func (x *FfprobeStream) HasChannelLayout() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 12)
+}
+
+func (x *FfprobeStream) HasDuration() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 13)
+}
+
+func (x *FfprobeStream) HasBitRate() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 14)
+}
+
+func (x *FfprobeStream) HasNbFrames() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 15)
+}
+
+func (x *FfprobeStream) HasCodecTagString() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 17)
+}
+
+func (x *FfprobeStream) HasLevel() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 18)
+}
+
+func (x *FfprobeStream) HasBitsPerSample() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 19)
+}
+
+func (x *FfprobeStream) ClearIndex() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Index = 0
+}
+
+func (x *FfprobeStream) ClearCodecName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_CodecName = nil
+}
+
+func (x *FfprobeStream) ClearCodecLongName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_CodecLongName = nil
+}
+
+func (x *FfprobeStream) ClearCodecType() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_CodecType = nil
+}
+
+func (x *FfprobeStream) ClearProfile() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Profile = nil
+}
+
+func (x *FfprobeStream) ClearWidth() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Width = 0
+}
+
+func (x *FfprobeStream) ClearHeight() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_Height = 0
+}
+
+func (x *FfprobeStream) ClearPixFmt() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_PixFmt = nil
+}
+
+func (x *FfprobeStream) ClearRFrameRate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 8)
+	x.xxx_hidden_RFrameRate = nil
+}
+
+func (x *FfprobeStream) ClearAvgFrameRate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_AvgFrameRate = nil
+}
+
+func (x *FfprobeStream) ClearSampleRate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	x.xxx_hidden_SampleRate = 0
+}
+
+func (x *FfprobeStream) ClearChannels() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_Channels = 0
+}
+
+func (x *FfprobeStream) ClearChannelLayout() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 12)
+	x.xxx_hidden_ChannelLayout = nil
+}
+
+func (x *FfprobeStream) ClearDuration() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 13)
+	x.xxx_hidden_Duration = 0
+}
+
+func (x *FfprobeStream) ClearBitRate() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 14)
+	x.xxx_hidden_BitRate = 0
+}
+
+func (x *FfprobeStream) ClearNbFrames() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 15)
+	x.xxx_hidden_NbFrames = 0
+}
+
+func (x *FfprobeStream) ClearCodecTagString() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 17)
+	x.xxx_hidden_CodecTagString = nil
+}
+
+func (x *FfprobeStream) ClearLevel() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 18)
+	x.xxx_hidden_Level = 0
+}
+
+func (x *FfprobeStream) ClearBitsPerSample() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 19)
+	x.xxx_hidden_BitsPerSample = 0
+}
+
+type FfprobeStream_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Index *int32
+	// Codec name (e.g. "h264", "aac").
+	CodecName     *string
+	CodecLongName *string
+	// Stream type: "video", "audio", "subtitle", "data", or "attachment".
+	CodecType *string
+	Profile   *string
+	// Video width and height in pixels.
+	Width  *int32
+	Height *int32
+	// Video pixel format (e.g. "yuv420p").
+	PixFmt *string
+	// Frame rates as the fraction ffprobe reports (e.g. "30000/1001").
+	RFrameRate   *string
+	AvgFrameRate *string
+	// Audio sample rate in Hz.
+	SampleRate *int32
+	// Audio channel count and layout (e.g. "stereo").
+	Channels      *int32
+	ChannelLayout *string
+	// Duration in seconds.
+	Duration *float64
+	// Bits per second.
+	BitRate  *int64
+	NbFrames *int64
+	Tags     map[string]string
+	// Four character code of the codec (e.g. "avc1").
+	CodecTagString *string
+	// Codec level (e.g. 40 for H.264 level 4.0).
+	Level *int32
+	// Audio bits per sample, 0 for codecs without a fixed sample size.
+	BitsPerSample *int32
+}
+
+func (b0 FfprobeStream_builder) Build() *FfprobeStream {
+	m0 := &FfprobeStream{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Index != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 20)
+		x.xxx_hidden_Index = *b.Index
+	}
+	if b.CodecName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 20)
+		x.xxx_hidden_CodecName = b.CodecName
+	}
+	if b.CodecLongName != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 20)
+		x.xxx_hidden_CodecLongName = b.CodecLongName
+	}
+	if b.CodecType != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 20)
+		x.xxx_hidden_CodecType = b.CodecType
+	}
+	if b.Profile != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 20)
+		x.xxx_hidden_Profile = b.Profile
+	}
+	if b.Width != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 20)
+		x.xxx_hidden_Width = *b.Width
+	}
+	if b.Height != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 20)
+		x.xxx_hidden_Height = *b.Height
+	}
+	if b.PixFmt != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 20)
+		x.xxx_hidden_PixFmt = b.PixFmt
+	}
+	if b.RFrameRate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 20)
+		x.xxx_hidden_RFrameRate = b.RFrameRate
+	}
+	if b.AvgFrameRate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 20)
+		x.xxx_hidden_AvgFrameRate = b.AvgFrameRate
+	}
+	if b.SampleRate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 20)
+		x.xxx_hidden_SampleRate = *b.SampleRate
+	}
+	if b.Channels != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 20)
+		x.xxx_hidden_Channels = *b.Channels
+	}
+	if b.ChannelLayout != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 12, 20)
+		x.xxx_hidden_ChannelLayout = b.ChannelLayout
+	}
+	if b.Duration != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 13, 20)
+		x.xxx_hidden_Duration = *b.Duration
+	}
+	if b.BitRate != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 14, 20)
+		x.xxx_hidden_BitRate = *b.BitRate
+	}
+	if b.NbFrames != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 15, 20)
+		x.xxx_hidden_NbFrames = *b.NbFrames
+	}
+	x.xxx_hidden_Tags = b.Tags
+	if b.CodecTagString != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 17, 20)
+		x.xxx_hidden_CodecTagString = b.CodecTagString
+	}
+	if b.Level != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 18, 20)
+		x.xxx_hidden_Level = *b.Level
+	}
+	if b.BitsPerSample != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 19, 20)
+		x.xxx_hidden_BitsPerSample = *b.BitsPerSample
+	}
+	return m0
+}
+
+type FfprobeChapter struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          int64                  `protobuf:"varint,1,opt,name=id"`
+	xxx_hidden_StartTime   float64                `protobuf:"fixed64,2,opt,name=start_time,json=startTime"`
+	xxx_hidden_EndTime     float64                `protobuf:"fixed64,3,opt,name=end_time,json=endTime"`
+	xxx_hidden_Tags        map[string]string      `protobuf:"bytes,4,rep,name=tags" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *FfprobeChapter) Reset() {
+	*x = FfprobeChapter{}
+	mi := &file_proto_ffembed_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FfprobeChapter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FfprobeChapter) ProtoMessage() {}
+
+func (x *FfprobeChapter) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ffembed_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FfprobeChapter) GetId() int64 {
+	if x != nil {
+		return x.xxx_hidden_Id
+	}
+	return 0
+}
+
+func (x *FfprobeChapter) GetStartTime() float64 {
+	if x != nil {
+		return x.xxx_hidden_StartTime
+	}
+	return 0
+}
+
+func (x *FfprobeChapter) GetEndTime() float64 {
+	if x != nil {
+		return x.xxx_hidden_EndTime
+	}
+	return 0
+}
+
+func (x *FfprobeChapter) GetTags() map[string]string {
+	if x != nil {
+		return x.xxx_hidden_Tags
+	}
+	return nil
+}
+
+func (x *FfprobeChapter) SetId(v int64) {
+	x.xxx_hidden_Id = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *FfprobeChapter) SetStartTime(v float64) {
+	x.xxx_hidden_StartTime = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+}
+
+func (x *FfprobeChapter) SetEndTime(v float64) {
+	x.xxx_hidden_EndTime = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *FfprobeChapter) SetTags(v map[string]string) {
+	x.xxx_hidden_Tags = v
+}
+
+func (x *FfprobeChapter) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *FfprobeChapter) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *FfprobeChapter) HasEndTime() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FfprobeChapter) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = 0
+}
+
+func (x *FfprobeChapter) ClearStartTime() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_StartTime = 0
+}
+
+func (x *FfprobeChapter) ClearEndTime() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_EndTime = 0
+}
+
+type FfprobeChapter_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id *int64
+	// Start and end time in seconds.
+	StartTime *float64
+	EndTime   *float64
+	Tags      map[string]string
+}
+
+func (b0 FfprobeChapter_builder) Build() *FfprobeChapter {
+	m0 := &FfprobeChapter{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Id = *b.Id
+	}
+	if b.StartTime != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_StartTime = *b.StartTime
+	}
+	if b.EndTime != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_EndTime = *b.EndTime
+	}
+	x.xxx_hidden_Tags = b.Tags
 	return m0
 }
 
 type FfprobeResponse struct {
-	state         protoimpl.MessageState `protogen:"opaque.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Output      *string                `protobuf:"bytes,1,opt,name=output"`
+	xxx_hidden_Format      *FfprobeFormat         `protobuf:"bytes,2,opt,name=format"`
+	xxx_hidden_Streams     *[]*FfprobeStream      `protobuf:"bytes,3,rep,name=streams"`
+	xxx_hidden_Chapters    *[]*FfprobeChapter     `protobuf:"bytes,4,rep,name=chapters"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *FfprobeResponse) Reset() {
 	*x = FfprobeResponse{}
-	mi := &file_proto_ffembed_proto_msgTypes[5]
+	mi := &file_proto_ffembed_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -413,7 +2904,7 @@ func (x *FfprobeResponse) String() string {
 func (*FfprobeResponse) ProtoMessage() {}
 
 func (x *FfprobeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_ffembed_proto_msgTypes[5]
+	mi := &file_proto_ffembed_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -424,15 +2915,102 @@ func (x *FfprobeResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
+func (x *FfprobeResponse) GetOutput() string {
+	if x != nil {
+		if x.xxx_hidden_Output != nil {
+			return *x.xxx_hidden_Output
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FfprobeResponse) GetFormat() *FfprobeFormat {
+	if x != nil {
+		return x.xxx_hidden_Format
+	}
+	return nil
+}
+
+func (x *FfprobeResponse) GetStreams() []*FfprobeStream {
+	if x != nil {
+		if x.xxx_hidden_Streams != nil {
+			return *x.xxx_hidden_Streams
+		}
+	}
+	return nil
+}
+
+func (x *FfprobeResponse) GetChapters() []*FfprobeChapter {
+	if x != nil {
+		if x.xxx_hidden_Chapters != nil {
+			return *x.xxx_hidden_Chapters
+		}
+	}
+	return nil
+}
+
+func (x *FfprobeResponse) SetOutput(v string) {
+	x.xxx_hidden_Output = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *FfprobeResponse) SetFormat(v *FfprobeFormat) {
+	x.xxx_hidden_Format = v
+}
+
+func (x *FfprobeResponse) SetStreams(v []*FfprobeStream) {
+	x.xxx_hidden_Streams = &v
+}
+
+func (x *FfprobeResponse) SetChapters(v []*FfprobeChapter) {
+	x.xxx_hidden_Chapters = &v
+}
+
+func (x *FfprobeResponse) HasOutput() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *FfprobeResponse) HasFormat() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Format != nil
+}
+
+func (x *FfprobeResponse) ClearOutput() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Output = nil
+}
+
+func (x *FfprobeResponse) ClearFormat() {
+	x.xxx_hidden_Format = nil
+}
+
 type FfprobeResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
+	// Everything ffprobe wrote to stdout. JSON for structured requests.
+	Output   *string
+	Format   *FfprobeFormat
+	Streams  []*FfprobeStream
+	Chapters []*FfprobeChapter
 }
 
 func (b0 FfprobeResponse_builder) Build() *FfprobeResponse {
 	m0 := &FfprobeResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
+	if b.Output != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Output = b.Output
+	}
+	x.xxx_hidden_Format = b.Format
+	x.xxx_hidden_Streams = &b.Streams
+	x.xxx_hidden_Chapters = &b.Chapters
 	return m0
 }
 
@@ -440,36 +3018,167 @@ var File_proto_ffembed_proto protoreflect.FileDescriptor
 
 const file_proto_ffembed_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/ffembed.proto\x12\x10cloudfra.ffembed\"\xa7\x01\n" +
+	"\x13proto/ffembed.proto\x12\x10cloudfra.ffembed\"\xe9\x01\n" +
 	"\x04Args\x12)\n" +
 	"\x10prefer_installed\x18\x01 \x01(\bR\x0fpreferInstalled\x12\x1d\n" +
 	"\n" +
 	"remote_url\x18\x02 \x01(\tR\tremoteUrl\x12.\n" +
 	"\x13remote_url_checksum\x18\x03 \x01(\tR\x11remoteUrlChecksum\x12%\n" +
-	"\x0eaccept_license\x18\x04 \x03(\tR\racceptLicense\"#\n" +
+	"\x0eaccept_license\x18\x04 \x03(\tR\racceptLicense\x12\x19\n" +
+	"\bwork_dir\x18\x05 \x01(\tR\aworkDir\x12%\n" +
+	"\x0eallow_download\x18\x06 \x01(\bR\rallowDownload\"\xdd\x02\n" +
 	"\rFfmpegRequest\x12\x12\n" +
-	"\x04args\x18\x01 \x03(\tR\x04args\"\r\n" +
-	"\vFfmpegEvent\"\x10\n" +
-	"\x0eFfmpegResponse\"$\n" +
+	"\x04args\x18\x01 \x03(\tR\x04args\x12\x16\n" +
+	"\x06inputs\x18\x02 \x03(\tR\x06inputs\x12\x16\n" +
+	"\x06output\x18\x03 \x01(\tR\x06output\x12\x1f\n" +
+	"\vvideo_codec\x18\x04 \x01(\tR\n" +
+	"videoCodec\x12\x1f\n" +
+	"\vaudio_codec\x18\x05 \x01(\tR\n" +
+	"audioCodec\x12\x10\n" +
+	"\x03crf\x18\x06 \x01(\x05R\x03crf\x12\x16\n" +
+	"\x06preset\x18\a \x01(\tR\x06preset\x12#\n" +
+	"\rvideo_bitrate\x18\b \x01(\tR\fvideoBitrate\x12#\n" +
+	"\raudio_bitrate\x18\t \x01(\tR\faudioBitrate\x12\x16\n" +
+	"\x06format\x18\n" +
+	" \x01(\tR\x06format\x12\x1c\n" +
+	"\toverwrite\x18\v \x01(\bR\toverwrite\x12\x1c\n" +
+	"\tfaststart\x18\f \x01(\bR\tfaststart\"\x8a\x02\n" +
+	"\x0eFfmpegProgress\x12\x14\n" +
+	"\x05frame\x18\x01 \x01(\x03R\x05frame\x12\x10\n" +
+	"\x03fps\x18\x02 \x01(\x01R\x03fps\x12!\n" +
+	"\fbitrate_kbps\x18\x03 \x01(\x01R\vbitrateKbps\x12\x1d\n" +
+	"\n" +
+	"total_size\x18\x04 \x01(\x03R\ttotalSize\x12\x1e\n" +
+	"\vout_time_us\x18\x05 \x01(\x03R\toutTimeUs\x12\x1d\n" +
+	"\n" +
+	"dup_frames\x18\x06 \x01(\x03R\tdupFrames\x12\x1f\n" +
+	"\vdrop_frames\x18\a \x01(\x03R\n" +
+	"dropFrames\x12\x14\n" +
+	"\x05speed\x18\b \x01(\x01R\x05speed\x12\x18\n" +
+	"\apercent\x18\t \x01(\x01R\apercent\"\xe8\x01\n" +
+	"\vFfmpegEvent\x123\n" +
+	"\x05state\x18\x01 \x01(\x0e2\x1d.cloudfra.ffembed.FfmpegStateR\x05state\x12<\n" +
+	"\bprogress\x18\x02 \x01(\v2 .cloudfra.ffembed.FfmpegProgressR\bprogress\x12\x10\n" +
+	"\x03log\x18\x03 \x01(\tR\x03log\x12\x16\n" +
+	"\x06output\x18\x04 \x01(\tR\x06output\x12<\n" +
+	"\bresponse\x18\x05 \x01(\v2 .cloudfra.ffembed.FfmpegResponseR\bresponse\"\xef\x01\n" +
+	"\x0eFfmpegResponse\x123\n" +
+	"\x05state\x18\x01 \x01(\x0e2\x1d.cloudfra.ffembed.FfmpegStateR\x05state\x12\x1b\n" +
+	"\texit_code\x18\x02 \x01(\x05R\bexitCode\x12\x16\n" +
+	"\x06output\x18\x03 \x01(\tR\x06output\x12\x10\n" +
+	"\x03log\x18\x04 \x01(\tR\x03log\x12)\n" +
+	"\x10progress_reports\x18\x05 \x01(\x03R\x0fprogressReports\x12\x1d\n" +
+	"\n" +
+	"last_frame\x18\x06 \x01(\x03R\tlastFrame\x12\x17\n" +
+	"\amax_fps\x18\a \x01(\x01R\x06maxFps\"\xca\x01\n" +
 	"\x0eFfprobeRequest\x12\x12\n" +
-	"\x04args\x18\x01 \x03(\tR\x04args\"\x11\n" +
-	"\x0fFfprobeResponseB#Z!github.com/cloudfra/ffembed/protob\beditionsp\xe9\a"
+	"\x04args\x18\x01 \x03(\tR\x04args\x12\x14\n" +
+	"\x05input\x18\x02 \x01(\tR\x05input\x12\x1f\n" +
+	"\vshow_format\x18\x03 \x01(\bR\n" +
+	"showFormat\x12!\n" +
+	"\fshow_streams\x18\x04 \x01(\bR\vshowStreams\x12#\n" +
+	"\rshow_chapters\x18\x05 \x01(\bR\fshowChapters\x12%\n" +
+	"\x0eselect_streams\x18\x06 \x01(\tR\rselectStreams\"\xf7\x02\n" +
+	"\rFfprobeFormat\x12\x1a\n" +
+	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x1f\n" +
+	"\vformat_name\x18\x02 \x01(\tR\n" +
+	"formatName\x12(\n" +
+	"\x10format_long_name\x18\x03 \x01(\tR\x0eformatLongName\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x04 \x01(\x01R\tstartTime\x12\x1a\n" +
+	"\bduration\x18\x05 \x01(\x01R\bduration\x12\x12\n" +
+	"\x04size\x18\x06 \x01(\x03R\x04size\x12\x19\n" +
+	"\bbit_rate\x18\a \x01(\x03R\abitRate\x12\x1d\n" +
+	"\n" +
+	"nb_streams\x18\b \x01(\x05R\tnbStreams\x12=\n" +
+	"\x04tags\x18\t \x03(\v2).cloudfra.ffembed.FfprobeFormat.TagsEntryR\x04tags\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcc\x05\n" +
+	"\rFfprobeStream\x12\x14\n" +
+	"\x05index\x18\x01 \x01(\x05R\x05index\x12\x1d\n" +
+	"\n" +
+	"codec_name\x18\x02 \x01(\tR\tcodecName\x12&\n" +
+	"\x0fcodec_long_name\x18\x03 \x01(\tR\rcodecLongName\x12\x1d\n" +
+	"\n" +
+	"codec_type\x18\x04 \x01(\tR\tcodecType\x12\x18\n" +
+	"\aprofile\x18\x05 \x01(\tR\aprofile\x12\x14\n" +
+	"\x05width\x18\x06 \x01(\x05R\x05width\x12\x16\n" +
+	"\x06height\x18\a \x01(\x05R\x06height\x12\x17\n" +
+	"\apix_fmt\x18\b \x01(\tR\x06pixFmt\x12 \n" +
+	"\fr_frame_rate\x18\t \x01(\tR\n" +
+	"rFrameRate\x12$\n" +
+	"\x0eavg_frame_rate\x18\n" +
+	" \x01(\tR\favgFrameRate\x12\x1f\n" +
+	"\vsample_rate\x18\v \x01(\x05R\n" +
+	"sampleRate\x12\x1a\n" +
+	"\bchannels\x18\f \x01(\x05R\bchannels\x12%\n" +
+	"\x0echannel_layout\x18\r \x01(\tR\rchannelLayout\x12\x1a\n" +
+	"\bduration\x18\x0e \x01(\x01R\bduration\x12\x19\n" +
+	"\bbit_rate\x18\x0f \x01(\x03R\abitRate\x12\x1b\n" +
+	"\tnb_frames\x18\x10 \x01(\x03R\bnbFrames\x12=\n" +
+	"\x04tags\x18\x11 \x03(\v2).cloudfra.ffembed.FfprobeStream.TagsEntryR\x04tags\x12(\n" +
+	"\x10codec_tag_string\x18\x12 \x01(\tR\x0ecodecTagString\x12\x14\n" +
+	"\x05level\x18\x13 \x01(\x05R\x05level\x12&\n" +
+	"\x0fbits_per_sample\x18\x14 \x01(\x05R\rbitsPerSample\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd3\x01\n" +
+	"\x0eFfprobeChapter\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x02 \x01(\x01R\tstartTime\x12\x19\n" +
+	"\bend_time\x18\x03 \x01(\x01R\aendTime\x12>\n" +
+	"\x04tags\x18\x04 \x03(\v2*.cloudfra.ffembed.FfprobeChapter.TagsEntryR\x04tags\x1a7\n" +
+	"\tTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xdb\x01\n" +
+	"\x0fFfprobeResponse\x12\x16\n" +
+	"\x06output\x18\x01 \x01(\tR\x06output\x127\n" +
+	"\x06format\x18\x02 \x01(\v2\x1f.cloudfra.ffembed.FfprobeFormatR\x06format\x129\n" +
+	"\astreams\x18\x03 \x03(\v2\x1f.cloudfra.ffembed.FfprobeStreamR\astreams\x12<\n" +
+	"\bchapters\x18\x04 \x03(\v2 .cloudfra.ffembed.FfprobeChapterR\bchapters*\x96\x01\n" +
+	"\vFfmpegState\x12\x1c\n" +
+	"\x18FFMPEG_STATE_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14FFMPEG_STATE_RUNNING\x10\x01\x12\x1a\n" +
+	"\x16FFMPEG_STATE_COMPLETED\x10\x02\x12\x17\n" +
+	"\x13FFMPEG_STATE_FAILED\x10\x03\x12\x1a\n" +
+	"\x16FFMPEG_STATE_CANCELLED\x10\x04B#Z!github.com/cloudfra/ffembed/protob\beditionsp\xe9\a"
 
-var file_proto_ffembed_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_proto_ffembed_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_proto_ffembed_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_ffembed_proto_goTypes = []any{
-	(*Args)(nil),            // 0: cloudfra.ffembed.Args
-	(*FfmpegRequest)(nil),   // 1: cloudfra.ffembed.FfmpegRequest
-	(*FfmpegEvent)(nil),     // 2: cloudfra.ffembed.FfmpegEvent
-	(*FfmpegResponse)(nil),  // 3: cloudfra.ffembed.FfmpegResponse
-	(*FfprobeRequest)(nil),  // 4: cloudfra.ffembed.FfprobeRequest
-	(*FfprobeResponse)(nil), // 5: cloudfra.ffembed.FfprobeResponse
+	(FfmpegState)(0),        // 0: cloudfra.ffembed.FfmpegState
+	(*Args)(nil),            // 1: cloudfra.ffembed.Args
+	(*FfmpegRequest)(nil),   // 2: cloudfra.ffembed.FfmpegRequest
+	(*FfmpegProgress)(nil),  // 3: cloudfra.ffembed.FfmpegProgress
+	(*FfmpegEvent)(nil),     // 4: cloudfra.ffembed.FfmpegEvent
+	(*FfmpegResponse)(nil),  // 5: cloudfra.ffembed.FfmpegResponse
+	(*FfprobeRequest)(nil),  // 6: cloudfra.ffembed.FfprobeRequest
+	(*FfprobeFormat)(nil),   // 7: cloudfra.ffembed.FfprobeFormat
+	(*FfprobeStream)(nil),   // 8: cloudfra.ffembed.FfprobeStream
+	(*FfprobeChapter)(nil),  // 9: cloudfra.ffembed.FfprobeChapter
+	(*FfprobeResponse)(nil), // 10: cloudfra.ffembed.FfprobeResponse
+	nil,                     // 11: cloudfra.ffembed.FfprobeFormat.TagsEntry
+	nil,                     // 12: cloudfra.ffembed.FfprobeStream.TagsEntry
+	nil,                     // 13: cloudfra.ffembed.FfprobeChapter.TagsEntry
 }
 var file_proto_ffembed_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: cloudfra.ffembed.FfmpegEvent.state:type_name -> cloudfra.ffembed.FfmpegState
+	3,  // 1: cloudfra.ffembed.FfmpegEvent.progress:type_name -> cloudfra.ffembed.FfmpegProgress
+	5,  // 2: cloudfra.ffembed.FfmpegEvent.response:type_name -> cloudfra.ffembed.FfmpegResponse
+	0,  // 3: cloudfra.ffembed.FfmpegResponse.state:type_name -> cloudfra.ffembed.FfmpegState
+	11, // 4: cloudfra.ffembed.FfprobeFormat.tags:type_name -> cloudfra.ffembed.FfprobeFormat.TagsEntry
+	12, // 5: cloudfra.ffembed.FfprobeStream.tags:type_name -> cloudfra.ffembed.FfprobeStream.TagsEntry
+	13, // 6: cloudfra.ffembed.FfprobeChapter.tags:type_name -> cloudfra.ffembed.FfprobeChapter.TagsEntry
+	7,  // 7: cloudfra.ffembed.FfprobeResponse.format:type_name -> cloudfra.ffembed.FfprobeFormat
+	8,  // 8: cloudfra.ffembed.FfprobeResponse.streams:type_name -> cloudfra.ffembed.FfprobeStream
+	9,  // 9: cloudfra.ffembed.FfprobeResponse.chapters:type_name -> cloudfra.ffembed.FfprobeChapter
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_proto_ffembed_proto_init() }
@@ -482,13 +3191,14 @@ func file_proto_ffembed_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_ffembed_proto_rawDesc), len(file_proto_ffembed_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   6,
+			NumEnums:      1,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_proto_ffembed_proto_goTypes,
 		DependencyIndexes: file_proto_ffembed_proto_depIdxs,
+		EnumInfos:         file_proto_ffembed_proto_enumTypes,
 		MessageInfos:      file_proto_ffembed_proto_msgTypes,
 	}.Build()
 	File_proto_ffembed_proto = out.File

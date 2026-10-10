@@ -34,7 +34,8 @@ func TestCSVToList(t *testing.T) {
 		{name: "trims whitespace", input: " a ,\tb\n, c d ", want: []string{"a", "b", "c d"}},
 		{name: "drops empty values", input: "a,,b,", want: []string{"a", "b"}},
 		{name: "removes duplicates", input: "a,b,a, b", want: []string{"a", "b"}},
-		{name: "url", input: "https://example.com/ffmpeg.tar.xz?a=1,/tmp/ffmpeg", want: []string{"/tmp/ffmpeg", "https://example.com/ffmpeg.tar.xz?a=1"}},
+		{name: "keeps order", input: "c,a,b,a", want: []string{"c", "a", "b"}},
+		{name: "url", input: "https://example.com/ffmpeg.tar.xz?a=1,/tmp/ffmpeg", want: []string{"https://example.com/ffmpeg.tar.xz?a=1", "/tmp/ffmpeg"}},
 	}
 
 	for _, tc := range testCases {
@@ -43,8 +44,6 @@ func TestCSVToList(t *testing.T) {
 			if got == nil {
 				t.Fatalf("CSVToList(%q) = nil, want non-nil", tc.input)
 			}
-			// CSVToList does not guarantee order.
-			slices.Sort(got)
 			if !slices.Equal(got, tc.want) {
 				t.Errorf("CSVToList(%q) = %q, want %q", tc.input, got, tc.want)
 			}
