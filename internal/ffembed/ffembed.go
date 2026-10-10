@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
 	"slices"
 	"strings"
 )
@@ -29,8 +30,7 @@ import (
 //go:embed manifest.json
 var manifestJSON []byte
 
-// xzMagic is the header every xz stream starts with. The bundle committed to
-// the repository is a placeholder, a real one is written by ffbundle.
+// xzMagic is the header every xz stream starts with.
 var xzMagic = []byte{0xfd, '7', 'z', 'X', 'Z', 0x00}
 
 // ErrNotEmbedded is returned by Ffmpeg when the binary was built without an
@@ -38,12 +38,21 @@ var xzMagic = []byte{0xfd, '7', 'z', 'X', 'Z', 0x00}
 var ErrNotEmbedded = errors.New("embedded ffmpeg is not available")
 
 // Ffmpeg returns the embedded ffmpeg bundle, a .tar.xz archive written by
-// ffbundle that holds ffmpeg, ffprobe, and their license.
+// ffbundle that holds ffmpeg, ffprobe, and their license. The bundle is
+// embedded when it is at bin/GOOS_GOARCH/ffmpeg.tar.xz during the build.
 func Ffmpeg() ([]byte, error) {
-	if bytes.HasPrefix(ffmpegEmbedded, xzMagic) {
-		return ffmpegEmbedded, nil
+	return readBundle(embedded, embeddedPath)
+}
+
+// readBundle returns the bundle at name in fsys. It returns ErrNotEmbedded
+// when there is none, or when the file is a placeholder rather than a bundle.
+func readBundle(fsys fs.FS, name string) ([]byte, error) {
+	// The bundle is large, so it is only read once it is asked for.
+	bundle, err := fs.ReadFile(fsys, name)
+	if err != nil || !bytes.HasPrefix(bundle, xzMagic) {
+		return nil, ErrNotEmbedded
 	}
-	return nil, ErrNotEmbedded
+	return bundle, nil
 }
 
 // Manifest lists the ffmpeg builds that can be downloaded, keyed by platform

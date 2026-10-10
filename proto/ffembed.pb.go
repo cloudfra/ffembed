@@ -45,7 +45,7 @@ const (
 	// ffmpeg exited with an error.
 	FfmpegState_FFMPEG_STATE_FAILED FfmpegState = 3
 	// ffmpeg was stopped by a call to Cancel.
-	FfmpegState_FFMPEG_STATE_CANCELLED FfmpegState = 4
+	FfmpegState_FFMPEG_STATE_CANCELED FfmpegState = 4
 )
 
 // Enum value maps for FfmpegState.
@@ -55,14 +55,14 @@ var (
 		1: "FFMPEG_STATE_RUNNING",
 		2: "FFMPEG_STATE_COMPLETED",
 		3: "FFMPEG_STATE_FAILED",
-		4: "FFMPEG_STATE_CANCELLED",
+		4: "FFMPEG_STATE_CANCELED",
 	}
 	FfmpegState_value = map[string]int32{
 		"FFMPEG_STATE_UNSPECIFIED": 0,
 		"FFMPEG_STATE_RUNNING":     1,
 		"FFMPEG_STATE_COMPLETED":   2,
 		"FFMPEG_STATE_FAILED":      3,
-		"FFMPEG_STATE_CANCELLED":   4,
+		"FFMPEG_STATE_CANCELED":    4,
 	}
 )
 
@@ -1473,7 +1473,7 @@ func (x *FfmpegResponse) ClearMaxFps() {
 type FfmpegResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// State ffmpeg finished in: completed, failed, or cancelled.
+	// State ffmpeg finished in: completed, failed, or canceled.
 	State *FfmpegState
 	// Exit code of ffmpeg, -1 when it was killed.
 	ExitCode *int32
@@ -3137,13 +3137,13 @@ const file_proto_ffembed_proto_rawDesc = "" +
 	"\x06output\x18\x01 \x01(\tR\x06output\x127\n" +
 	"\x06format\x18\x02 \x01(\v2\x1f.cloudfra.ffembed.FfprobeFormatR\x06format\x129\n" +
 	"\astreams\x18\x03 \x03(\v2\x1f.cloudfra.ffembed.FfprobeStreamR\astreams\x12<\n" +
-	"\bchapters\x18\x04 \x03(\v2 .cloudfra.ffembed.FfprobeChapterR\bchapters*\x96\x01\n" +
+	"\bchapters\x18\x04 \x03(\v2 .cloudfra.ffembed.FfprobeChapterR\bchapters*\x95\x01\n" +
 	"\vFfmpegState\x12\x1c\n" +
 	"\x18FFMPEG_STATE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14FFMPEG_STATE_RUNNING\x10\x01\x12\x1a\n" +
 	"\x16FFMPEG_STATE_COMPLETED\x10\x02\x12\x17\n" +
-	"\x13FFMPEG_STATE_FAILED\x10\x03\x12\x1a\n" +
-	"\x16FFMPEG_STATE_CANCELLED\x10\x04B#Z!github.com/cloudfra/ffembed/protob\beditionsp\xe9\a"
+	"\x13FFMPEG_STATE_FAILED\x10\x03\x12\x19\n" +
+	"\x15FFMPEG_STATE_CANCELED\x10\x04B#Z!github.com/cloudfra/ffembed/protob\beditionsp\xe9\a"
 
 var file_proto_ffembed_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_ffembed_proto_msgTypes = make([]protoimpl.MessageInfo, 13)

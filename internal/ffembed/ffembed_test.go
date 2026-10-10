@@ -28,6 +28,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/cloudfra/ffembed/internal/common"
 	"github.com/mholt/archives"
@@ -134,25 +135,46 @@ func assertFiles(tb testing.TB, dir string, want map[string]string) {
 	}
 }
 
-func TestFfmpegPlaceholderIsNotEmbedded(t *testing.T) {
-	embedded := ffmpegEmbedded
-	t.Cleanup(func() { ffmpegEmbedded = embedded })
-
-	for _, placeholder := range [][]byte{nil, {}, []byte("a")} {
-		ffmpegEmbedded = placeholder
-		if _, err := Ffmpeg(); !errors.Is(err, ErrNotEmbedded) {
-			t.Errorf("Ffmpeg() with %q embedded = %v, want %v", placeholder, err, ErrNotEmbedded)
-		}
+func TestReadBundle(t *testing.T) {
+	bundle := bundleOf(t, map[string]string{"ffmpeg": "ffmpeg binary"})
+	fsys := fstest.MapFS{
+		"bin/linux_amd64/.gitkeep":        {},
+		"bin/linux_amd64/ffmpeg.tar.xz":   {Data: bundle},
+		"bin/windows_amd64/ffmpeg.tar.xz": {Data: []byte("a")},
+		"bin/darwin_arm64/ffmpeg.tar.xz":  {},
 	}
 
-	bundle := bundleOf(t, map[string]string{"ffmpeg": "ffmpeg binary"})
-	ffmpegEmbedded = bundle
-	got, err := Ffmpeg()
+	got, err := readBundle(fsys, "bin/linux_amd64/ffmpeg.tar.xz")
 	if err != nil {
-		t.Fatalf("Ffmpeg() with a bundle embedded failed, %s", err)
+		t.Fatalf("readBundle() failed, %s", err)
 	}
 	if !bytes.Equal(got, bundle) {
-		t.Errorf("Ffmpeg() returned %d bytes, want the %d bytes embedded", len(got), len(bundle))
+		t.Errorf("readBundle() returned %d bytes, want the %d bytes of the bundle", len(got), len(bundle))
+	}
+
+	for _, name := range []string{
+		"bin/windows_amd64/ffmpeg.tar.xz", // placeholder
+		"bin/darwin_arm64/ffmpeg.tar.xz",  // empty
+		"bin/linux_arm64/ffmpeg.tar.xz",   // missing
+		"",                                // platform without a bundle
+	} {
+		if _, err := readBundle(fsys, name); !errors.Is(err, ErrNotEmbedded) {
+			t.Errorf("readBundle(%q) = %v, want %v", name, err, ErrNotEmbedded)
+		}
+	}
+}
+
+func TestFfmpeg(t *testing.T) {
+	// Whether a bundle is embedded depends on how the test was built.
+	bundle, err := Ffmpeg()
+	if err != nil {
+		if !errors.Is(err, ErrNotEmbedded) {
+			t.Errorf("Ffmpeg() = %v, want %v", err, ErrNotEmbedded)
+		}
+		return
+	}
+	if !bytes.HasPrefix(bundle, xzMagic) {
+		t.Errorf("Ffmpeg() returned %d bytes that are not an xz stream", len(bundle))
 	}
 }
 

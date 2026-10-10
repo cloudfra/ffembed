@@ -178,9 +178,9 @@ type ffmpeg struct {
 	// durationUs is the duration of the first input, 0 when unknown.
 	durationUs int64
 
-	// cancel stops the process, cancelled tells that Cancel did so.
-	cancel    context.CancelFunc
-	cancelled atomic.Bool
+	// cancel stops the process, canceled tells that Cancel did so.
+	cancel   context.CancelFunc
+	canceled atomic.Bool
 
 	// mu guards onChange and response, and serializes the calls of onChange.
 	mu       sync.Mutex
@@ -202,7 +202,7 @@ func (f *ffmpeg) OnChange(onChange func(*pb.FfmpegEvent)) {
 }
 
 func (f *ffmpeg) Cancel() {
-	f.cancelled.Store(true)
+	f.canceled.Store(true)
 	f.cancel()
 }
 
@@ -287,10 +287,10 @@ func (f *ffmpeg) run() error {
 	// context of a run that did complete.
 	err := f.cmd.Wait()
 	if err != nil && (!errors.Is(err, context.Canceled) || !f.cmd.ProcessState.Success()) {
-		runErr = newRunError("ffmpeg", f.binary, err, strings.Join(logTail, "\n"), f.cancelled.Load())
+		runErr = newRunError("ffmpeg", f.binary, err, strings.Join(logTail, "\n"), f.canceled.Load())
 		response.SetState(pb.FfmpegState_FFMPEG_STATE_FAILED)
-		if errors.Is(runErr, ErrCancelled) {
-			response.SetState(pb.FfmpegState_FFMPEG_STATE_CANCELLED)
+		if errors.Is(runErr, ErrCanceled) {
+			response.SetState(pb.FfmpegState_FFMPEG_STATE_CANCELED)
 		}
 		response.SetExitCode(int32(runErr.ExitCode)) //nolint:gosec // G115: exit codes fit in 32 bits.
 		response.SetLog(runErr.Log)

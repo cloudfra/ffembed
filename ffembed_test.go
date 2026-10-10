@@ -618,7 +618,7 @@ func TestFFMpegPercentUnknown(t *testing.T) {
 func TestFFMpegFailure(t *testing.T) {
 	_, response, err := runFfmpeg(t, "fail")
 
-	if !errors.Is(err, ErrRunFailed) || errors.Is(err, ErrCancelled) || errors.Is(err, ErrFailedToStart) {
+	if !errors.Is(err, ErrRunFailed) || errors.Is(err, ErrCanceled) || errors.Is(err, ErrFailedToStart) {
 		t.Fatalf("Wait() = %v, want only %v", err, ErrRunFailed)
 	}
 	var runErr *RunError
@@ -645,7 +645,7 @@ func TestFFMpegCancel(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FFMpeg() failed, %s", err)
 	}
-	// Cancelled once ffmpeg reports progress, which is before it hangs.
+	// Canceled once ffmpeg reports progress, which is before it hangs.
 	instance.OnChange(func(event *pb.FfmpegEvent) {
 		if event.HasProgress() {
 			instance.Cancel()
@@ -655,11 +655,11 @@ func TestFFMpegCancel(t *testing.T) {
 	err = instance.Wait()
 	instance.Cancel()
 
-	if !errors.Is(err, ErrCancelled) || errors.Is(err, ErrRunFailed) {
-		t.Errorf("Wait() = %v, want only %v", err, ErrCancelled)
+	if !errors.Is(err, ErrCanceled) || errors.Is(err, ErrRunFailed) {
+		t.Errorf("Wait() = %v, want only %v", err, ErrCanceled)
 	}
-	if got := instance.Response().GetState(); got != pb.FfmpegState_FFMPEG_STATE_CANCELLED {
-		t.Errorf("response state = %s, want %s", got, pb.FfmpegState_FFMPEG_STATE_CANCELLED)
+	if got := instance.Response().GetState(); got != pb.FfmpegState_FFMPEG_STATE_CANCELED {
+		t.Errorf("response state = %s, want %s", got, pb.FfmpegState_FFMPEG_STATE_CANCELED)
 	}
 }
 
@@ -675,8 +675,8 @@ func TestFFMpegCancelBeforeWait(t *testing.T) {
 
 	instance.Cancel()
 
-	if err := instance.Wait(); !errors.Is(err, ErrCancelled) {
-		t.Errorf("Wait() = %v, want %v", err, ErrCancelled)
+	if err := instance.Wait(); !errors.Is(err, ErrCanceled) {
+		t.Errorf("Wait() = %v, want %v", err, ErrCanceled)
 	}
 }
 
@@ -689,7 +689,7 @@ func TestFFMpegCancelAfterCompletion(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FFMpeg() failed, %s", err)
 	}
-	// Cancelled on the last event, when ffmpeg has already exited.
+	// Canceled on the last event, when ffmpeg has already exited.
 	instance.OnChange(func(event *pb.FfmpegEvent) {
 		if event.HasResponse() {
 			instance.Cancel()

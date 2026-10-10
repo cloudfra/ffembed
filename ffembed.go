@@ -64,7 +64,7 @@ type FFMpeg interface {
 	// none are missed when it is set before Wait is called.
 	OnChange(func(*pb.FfmpegEvent))
 	// Wait blocks until ffmpeg exits. It returns a *RunError that is
-	// ErrCancelled when ffmpeg was stopped by Cancel, ErrFailedToStart when
+	// ErrCanceled when ffmpeg was stopped by Cancel, ErrFailedToStart when
 	// it could not run, and ErrRunFailed when it failed by itself.
 	Wait() error
 	// Cancel stops ffmpeg. It can be called at any time and more than once,

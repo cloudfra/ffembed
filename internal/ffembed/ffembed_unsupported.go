@@ -16,4 +16,11 @@
 
 package ffembed
 
-var ffmpegEmbedded []byte
+import (
+	"embed"
+)
+
+// embedded is empty, no bundle is embedded for this platform.
+var embedded embed.FS
+
+const embeddedPath = ""

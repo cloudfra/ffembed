@@ -40,9 +40,9 @@ var (
 	// ErrRunFailed is returned when ffmpeg or ffprobe started and then
 	// exited with an error or was killed.
 	ErrRunFailed = errors.New("run failed")
-	// ErrCancelled is returned by FFMpeg.Wait when ffmpeg was stopped by
+	// ErrCanceled is returned by FFMpeg.Wait when ffmpeg was stopped by
 	// FFMpeg.Cancel, so that it can be told from ffmpeg failing by itself.
-	ErrCancelled = errors.New("run cancelled")
+	ErrCanceled = errors.New("run canceled")
 )
 
 // RunError describes a failed run of ffmpeg or ffprobe.
@@ -63,7 +63,7 @@ type RunError struct {
 	Hint string
 
 	// kind is the sentinel error the failure is: ErrFailedToStart,
-	// ErrRunFailed, or ErrCancelled.
+	// ErrRunFailed, or ErrCanceled.
 	kind error
 }
 
@@ -91,8 +91,8 @@ func (e *RunError) Is(target error) bool {
 
 // newRunError describes the failure err of running binary. A process that
 // did not get to run is ErrFailedToStart, one stopped by Cancel is
-// ErrCancelled, and any other is ErrRunFailed.
-func newRunError(name string, binary string, err error, log string, cancelled bool) *RunError {
+// ErrCanceled, and any other is ErrRunFailed.
+func newRunError(name string, binary string, err error, log string, canceled bool) *RunError {
 	e := &RunError{Name: name, Binary: binary, ExitCode: -1, Log: log, Err: err, kind: ErrFailedToStart}
 
 	var exitErr *exec.ExitError
@@ -101,8 +101,8 @@ func newRunError(name string, binary string, err error, log string, cancelled bo
 		e.ExitCode = exitErr.ExitCode()
 	}
 	switch {
-	case cancelled:
-		e.kind = ErrCancelled
+	case canceled:
+		e.kind = ErrCanceled
 	case !exited:
 		e.Hint = missingLoaderHint(runtime.GOOS, binary, err)
 	default:
