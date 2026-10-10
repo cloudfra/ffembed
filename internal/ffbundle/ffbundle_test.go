@@ -15,7 +15,7 @@
 package ffbundle
 
 import (
-	"archive/tar"
+	"archive/zip"
 	"errors"
 	"io"
 	"maps"
@@ -24,7 +24,6 @@ import (
 	"testing"
 
 	"github.com/cloudfra/ffembed/internal/common"
-	"github.com/mholt/archives"
 )
 
 // validArgs returns arguments that pass validation.
@@ -35,7 +34,7 @@ func validArgs(tb testing.TB, input ...string) Args {
 		Architecture:    "amd64",
 		OperatingSystem: "linux",
 		Input:           input,
-		Output:          filepath.Join(tb.TempDir(), "bundle.tar.xz"),
+		Output:          filepath.Join(tb.TempDir(), "bundle.zip"),
 	}
 }
 
@@ -60,44 +59,33 @@ func writeFiles(tb testing.TB, files map[string]string) string {
 func readBundle(tb testing.TB, name string) map[string]string {
 	tb.Helper()
 
-	f, err := os.Open(filepath.Clean(name))
+	r, err := zip.OpenReader(name)
 	if err != nil {
-		tb.Fatalf("Open(%q) failed, %s", name, err)
+		tb.Fatalf("OpenReader(%q) failed, %s", name, err)
 	}
 	defer func() {
-		if err := f.Close(); err != nil {
+		if err := r.Close(); err != nil {
 			tb.Errorf("Close(%q) failed, %s", name, err)
 		}
 	}()
 
-	xz, err := archives.Xz{}.OpenReader(f)
-	if err != nil {
-		tb.Fatalf("opening xz stream of %q failed, %s", name, err)
-	}
-	defer func() {
-		if err := xz.Close(); err != nil {
-			tb.Errorf("closing xz stream of %q failed, %s", name, err)
-		}
-	}()
-
 	got := map[string]string{}
-	tr := tar.NewReader(xz)
-	for {
-		hdr, err := tr.Next()
-		if errors.Is(err, io.EOF) {
-			break
+	for _, f := range r.File {
+		if _, ok := got[f.Name]; ok {
+			tb.Errorf("%q contains %q more than once", name, f.Name)
 		}
+		rc, err := f.Open()
 		if err != nil {
-			tb.Fatalf("reading %q failed, %s", name, err)
+			tb.Fatalf("opening %q from %q failed, %s", f.Name, name, err)
 		}
-		if _, ok := got[hdr.Name]; ok {
-			tb.Errorf("%q contains %q more than once", name, hdr.Name)
-		}
-		content, err := io.ReadAll(tr)
+		content, err := io.ReadAll(rc)
 		if err != nil {
-			tb.Fatalf("reading %q from %q failed, %s", hdr.Name, name, err)
+			tb.Fatalf("reading %q from %q failed, %s", f.Name, name, err)
 		}
-		got[hdr.Name] = string(content)
+		if err := rc.Close(); err != nil {
+			tb.Errorf("closing %q from %q failed, %s", f.Name, name, err)
+		}
+		got[f.Name] = string(content)
 	}
 	return got
 }
@@ -269,39 +257,6 @@ func TestRunWritesOnlyOutput(t *testing.T) {
 	assertOnlyFile(t, filepath.Dir(args.Output), filepath.Base(args.Output))
 }
 
-func TestRunUsesMaxDictionary(t *testing.T) {
-	args := validArgs(t, writeFiles(t, map[string]string{"ffmpeg": "ffmpeg binary"}))
-
-	if err := Run(args); err != nil {
-		t.Fatalf("Run() failed, %s", err)
-	}
-
-	bundle, err := os.ReadFile(args.Output)
-	if err != nil {
-		t.Fatalf("ReadFile(%q) failed, %s", args.Output, err)
-	}
-
-	// The first block header follows the 12 byte stream header and holds the
-	// block header size, block flags, and then the LZMA2 filter: its ID, the
-	// size of its properties, and the encoded dictionary size.
-	// See https://tukaani.org/xz/xz-file-format.txt sections 3.1 and 5.3.1.
-	const (
-		filterOffset = 14
-		lzma2Filter  = 0x21
-		// dict64MiB is the encoding of the 64 MiB dictionary used by xz -9.
-		dict64MiB = 28
-	)
-	if len(bundle) < filterOffset+3 {
-		t.Fatalf("bundle is %d bytes, too short to hold a block header", len(bundle))
-	}
-	if got := bundle[filterOffset]; got != lzma2Filter {
-		t.Fatalf("filter = %#x, want LZMA2 (%#x)", got, lzma2Filter)
-	}
-	if got := bundle[filterOffset+2]; got != dict64MiB {
-		t.Errorf("encoded dictionary size = %d, want %d (64 MiB)", got, dict64MiB)
-	}
-}
-
 func TestRunMissingInput(t *testing.T) {
 	args := validArgs(t, filepath.Join(t.TempDir(), "does-not-exist"))
 
@@ -376,7 +331,7 @@ func TestRunMalformedInput(t *testing.T) {
 
 func TestRunOutputNotWritable(t *testing.T) {
 	args := validArgs(t, writeFiles(t, map[string]string{"ffmpeg": "ffmpeg binary"}))
-	args.Output = filepath.Join(t.TempDir(), "missing", "bundle.tar.xz")
+	args.Output = filepath.Join(t.TempDir(), "missing", "bundle.zip")
 
 	if err := Run(args); err == nil {
 		t.Error("Run() succeeded, want error")
@@ -388,7 +343,7 @@ func TestValidateArgs(t *testing.T) {
 		Architecture:    "amd64",
 		OperatingSystem: "linux",
 		Input:           []string{"ffmpeg.tar.xz"},
-		Output:          "bundle.tar.xz",
+		Output:          "bundle.zip",
 	}
 
 	testCases := []struct {
@@ -404,14 +359,13 @@ func TestValidateArgs(t *testing.T) {
 		{name: "nil input", edit: func(a *Args) { a.Input = nil }, wantArg: "url"},
 		{name: "empty input", edit: func(a *Args) { a.Input = []string{} }, wantArg: "url"},
 		{name: "missing output", edit: func(a *Args) { a.Output = "" }, wantArg: "output"},
-		{name: "output in directory", edit: func(a *Args) { a.Output = "out/dir/bundle.tar.xz" }},
-		{name: "output extension ignores case", edit: func(a *Args) { a.Output = "BUNDLE.TAR.XZ" }},
-		{name: "output is tar.gz", edit: func(a *Args) { a.Output = "bundle.tar.gz" }, wantArg: "output"},
-		{name: "output is xz without tar", edit: func(a *Args) { a.Output = "bundle.xz" }, wantArg: "output"},
-		{name: "output is tar without xz", edit: func(a *Args) { a.Output = "bundle.tar" }, wantArg: "output"},
+		{name: "output in directory", edit: func(a *Args) { a.Output = "out/dir/bundle.zip" }},
+		{name: "output extension ignores case", edit: func(a *Args) { a.Output = "BUNDLE.ZIP" }},
+		{name: "output is tar.xz", edit: func(a *Args) { a.Output = "bundle.tar.xz" }, wantArg: "output"},
+		{name: "output is 7z", edit: func(a *Args) { a.Output = "bundle.7z" }, wantArg: "output"},
 		{name: "output has no extension", edit: func(a *Args) { a.Output = "bundle" }, wantArg: "output"},
-		{name: "output is only the extension", edit: func(a *Args) { a.Output = "out/.tar.xz" }, wantArg: "output"},
-		{name: "output extension is not last", edit: func(a *Args) { a.Output = "bundle.tar.xz.bak" }, wantArg: "output"},
+		{name: "output is only the extension", edit: func(a *Args) { a.Output = "out/.zip" }, wantArg: "output"},
+		{name: "output extension is not last", edit: func(a *Args) { a.Output = "bundle.zip.bak" }, wantArg: "output"},
 		{name: "reports first missing argument", edit: func(a *Args) { *a = Args{} }, wantArg: "arch"},
 	}
 

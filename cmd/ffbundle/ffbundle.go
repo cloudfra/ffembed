@@ -28,7 +28,7 @@ var (
 	architectureFlag = flag.String("arch", "", "Architecture of the ffmpeg package to download (e.g. amd64, arm64)")
 	osFlag           = flag.String("os", "", "Operating system of the ffmpeg package to download (e.g. linux, windows, darwin)")
 	inputFlag        = flag.String("input", "", "Input of the ffmpeg package to download (e.g. https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz) for multiple files, delimit by commas.")
-	outputFlag       = flag.String("output", "", "Path of the output file, must end in .tar.xz (e.g. ffmpeg-static.tar.xz)")
+	outputFlag       = flag.String("output", "", "Path of the output file, must end in .zip (e.g. ffmpeg-static.zip)")
 	hashFlag         = flag.String("hash", "", "Expected hash of the remote file to verify integrity (e.g. sha256:abc123...)")
 )
 
