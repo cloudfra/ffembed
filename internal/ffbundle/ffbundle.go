@@ -28,13 +28,12 @@ import (
 
 	"github.com/cloudfra/ffembed/internal/common"
 	"github.com/cloudfra/ufs"
-	"github.com/mholt/archives"
 	// _ "github.com/cloudfra/ufs/drivers/all"
 )
 
 const (
 	// outputExtension is the file extension every bundle must have.
-	outputExtension = common.TarXzExtension
+	outputExtension = common.ZipExtension
 	// outputFileMode is the permission of the bundle that is written.
 	outputFileMode = 0o644
 )
@@ -47,18 +46,18 @@ type Args struct {
 	OperatingSystem string
 	// Input file of the ffmpeg package. Local file or URL to download (e.g. https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz)
 	Input []string
-	// Path of the output file, which must end in .tar.xz (e.g. ffmpeg-static.tar.xz)
+	// Path of the output file, which must end in .zip (e.g. ffmpeg-static.zip)
 	Output string
 	// Hash is the expected hash of the remote file to verify integrity (e.g. sha256:abc123...)
 	Hash string
 }
 
 // Run collects the ffmpeg, ffprobe, and license files from every input in args
-// and writes them to args.Output as an xz compressed tar archive. Files are
+// and writes them to args.Output as a zip archive. Files are
 // matched by base name, ignoring case, and are stored at the root of the
 // archive under their lower-cased base name. args.Output is only created or
 // replaced when the whole bundle was written. It returns a *common.ArgError
-// when args is incomplete or args.Output does not end in .tar.xz.
+// when args is incomplete or args.Output does not end in .zip.
 func Run(args Args) error {
 	ctx := context.Background()
 	slog.InfoContext(ctx, "Bundling ffmpeg", "architecture", args.Architecture, "operating_system", args.OperatingSystem, "input", args.Input, "output", args.Output, "hash", args.Hash)
@@ -77,7 +76,7 @@ func Run(args Args) error {
 		"license.md":  nil,
 	}
 	// Detect the ffmpeg, ffprobe, and license files and create a file for them.
-	files := []archives.FileInfo{}
+	files := []common.ArchiveFile{}
 
 	for _, inputPath := range args.Input {
 		u, err := url.Parse(inputPath)
@@ -112,9 +111,9 @@ func Run(args Args) error {
 			}
 			baseName := strings.ToLower(filepath.Base(name))
 			if _, ok := candidates[baseName]; ok {
-				files = append(files, archives.FileInfo{
-					FileInfo:      fstat,
-					NameInArchive: baseName,
+				files = append(files, common.ArchiveFile{
+					Name: baseName,
+					Info: fstat,
 					Open: func() (fs.File, error) {
 						return fsys.Open(name)
 					},
@@ -129,11 +128,11 @@ func Run(args Args) error {
 	return writeBundle(ctx, args.Output, files)
 }
 
-// writeBundle archives files into an xz compressed tar archive at output. The
+// writeBundle archives files into a zip archive at output. The
 // archive is written to a temporary file next to output and renamed into place
 // once it is complete, so a failure never leaves a partial bundle behind or
 // clobbers an existing one.
-func writeBundle(ctx context.Context, output string, files []archives.FileInfo) (err error) {
+func writeBundle(ctx context.Context, output string, files []common.ArchiveFile) (err error) {
 	f, err := os.CreateTemp(filepath.Dir(output), filepath.Base(output)+".*.tmp")
 	if err != nil {
 		return err
@@ -150,7 +149,7 @@ func writeBundle(ctx context.Context, output string, files []archives.FileInfo) 
 		}
 	}()
 
-	if err := common.TarXz().Archive(ctx, f, files); err != nil {
+	if err := common.WriteZip(f, files); err != nil {
 		return err
 	}
 	if err := f.Chmod(outputFileMode); err != nil {

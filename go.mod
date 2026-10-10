@@ -23,8 +23,6 @@ ignore (
 
 require (
 	github.com/cloudfra/ufs v0.16.1
-	github.com/mholt/archives v0.1.5
-	github.com/ulikunitz/xz v0.5.17
 	google.golang.org/protobuf v1.36.12
 )
 
@@ -39,6 +37,7 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/klauspost/compress v1.20.1 // indirect
 	github.com/klauspost/pgzip v1.2.7 // indirect
+	github.com/mholt/archives v0.1.5 // indirect
 	github.com/mikelolasagasti/xz v1.0.1 // indirect
 	github.com/minio/minlz v1.2.2 // indirect
 	github.com/nwaples/rardecode/v2 v2.4.1 // indirect
@@ -46,6 +45,7 @@ require (
 	github.com/sorairolake/lzip-go v0.3.8 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/stangelandcl/ppmd v0.1.1 // indirect
+	github.com/ulikunitz/xz v0.5.17 // indirect
 	go4.org v0.0.0-20260112195520-a5071408f32f // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
